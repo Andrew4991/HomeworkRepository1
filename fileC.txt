@@ -1,0 +1,2 @@
+feature3 is best1!!
+This's the file C!

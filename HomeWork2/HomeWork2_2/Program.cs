@@ -101,7 +101,6 @@ namespace HomeWork2_2
                 }
                 day = (DayOfWeek)numberOfDay;
                 PrintDay(day,today,GetNamberToWeekend(numberOfDay,(int)DayOfWeek.Saturday));
-                NextDay(day);
 
             }
         }

@@ -2,55 +2,80 @@
 
 namespace HomeWork2_2
 {
+    public enum DayOfWeek
+    {
+        
+        Monday = 1,
+        Tuesday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Saturday,
+        Sunday ,
+    }
     class Program
     {
         static int GetNamberDay(string day)
         {
 
-            if (day == "0" || day == "sanday" || day == "san" || day == "su") return 0;
             if (day == "1" || day == "monday" || day == "mon" || day == "mo") return 1;
             if (day == "2" || day == "tuesday" || day == "tue" || day == "tu") return 2;
             if (day == "3" || day == "wednesday" || day == "wed" || day == "we") return 3;
             if (day == "4" || day == "thursday" || day == "thu" || day == "th") return 4;
             if (day == "5" || day == "friday" || day == "fri" || day == "fr") return 5;
             if (day == "6" || day == "saturday" || day == "sat" || day == "sa") return 6;
+            if (day == "7" || day == "sanday" || day == "san" || day == "su") return 7;
 
             return -1;
         }
 
-        static void PrintDay(DayOfWeek day)
+        static int GetNamberToWeekend(int day, int weekend)
+        {
+            if (day < weekend) return weekend - day;
+            return 0;
+        }
+
+        static string NextDay(DayOfWeek day)
+        {
+            var dayTime = DateTime.Now.AddDays(1);
+            while (dayTime.DayOfWeek.ToString() != day.ToString())
+            {
+                dayTime=dayTime.AddDays(1);
+            }
+            return dayTime.ToShortDateString();
+        }
+
+
+        static void PrintDay(DayOfWeek day, string today, int numberToWeekend)
         {
             switch (day)
             {
                 case DayOfWeek.Sunday:
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Sunday");
                     break;
                 case DayOfWeek.Monday:
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Monday");
                     break;
                 case DayOfWeek.Tuesday:
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Tuesday");
                     break;
                 case DayOfWeek.Wednesday:
                     Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("Wednesday");
                     break;
                 case DayOfWeek.Thursday:
                     Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine("Thursday");
                     break;
                 case DayOfWeek.Friday:
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("Friday");
                     break;
                 case DayOfWeek.Saturday:
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine("Saturday");
                     break;
             }
+            Console.WriteLine($"{day} -- {(int)day} day of week");
+            Console.WriteLine($"Until the weekend {numberToWeekend} days");
+            if(day.ToString()==today) Console.WriteLine($"{day} -- It's today!");
+            Console.WriteLine($"Next {day} -- It's {NextDay(day)}");
             Console.ResetColor();
             Console.ReadKey();
 
@@ -61,6 +86,7 @@ namespace HomeWork2_2
             DayOfWeek day;
             string textDay;
             int numberOfDay;
+            string today = DateTime.Now.DayOfWeek.ToString();
             while (true)
             {
                 Console.Clear();
@@ -74,7 +100,8 @@ namespace HomeWork2_2
                     continue;
                 }
                 day = (DayOfWeek)numberOfDay;
-                PrintDay(day);
+                PrintDay(day,today,GetNamberToWeekend(numberOfDay,(int)DayOfWeek.Saturday));
+                NextDay(day);
 
             }
         }

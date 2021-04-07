@@ -15,7 +15,7 @@ namespace HomeWork2_2
     }
     class Program
     {
-        static int GetNamberDay(string day)
+        static int GetNamberDay(string day)//return namber our day
         {
 
             if (day == "1" || day == "monday" || day == "mon" || day == "mo") return 1;
@@ -29,13 +29,13 @@ namespace HomeWork2_2
             return -1;
         }
 
-        static int GetNamberToWeekend(int day, int weekend)
+        static int GetNamberToWeekend(int day, int weekend)//return number of days to weekend
         {
             if (day < weekend) return weekend - day;
             return 0;
         }
 
-        static string NextDay(DayOfWeek day)
+        static string NextDay(DayOfWeek day)//return next day
         {
             var dayTime = DateTime.Now.AddDays(1);
             while (dayTime.DayOfWeek.ToString() != day.ToString())
@@ -46,7 +46,7 @@ namespace HomeWork2_2
         }
 
 
-        static void PrintDay(DayOfWeek day, string today, int numberToWeekend)
+        static void PrintDay(DayOfWeek day, string today, int numberToWeekend)// print to console 
         {
             switch (day)
             {
@@ -77,7 +77,6 @@ namespace HomeWork2_2
             if(day.ToString()==today) Console.WriteLine($"{day} -- It's today!");
             Console.WriteLine($"Next {day} -- It's {NextDay(day)}");
             Console.ResetColor();
-            Console.ReadKey();
 
         }
 
@@ -101,7 +100,8 @@ namespace HomeWork2_2
                 }
                 day = (DayOfWeek)numberOfDay;
                 PrintDay(day,today,GetNamberToWeekend(numberOfDay,(int)DayOfWeek.Saturday));
-
+                Console.WriteLine("Please click ENTER to exit ");
+                if (Console.ReadKey().Key == ConsoleKey.Enter) return;
             }
         }
     }

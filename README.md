@@ -1,2 +1,3 @@
-#This my first repository in TMS!
-## Created README.md
+# My first repository for homework
+***
+My homework will be here 

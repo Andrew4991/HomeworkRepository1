@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HomeWork2_1
+namespace HelloWord
 {
     class Program
     {

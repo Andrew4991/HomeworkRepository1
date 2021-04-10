@@ -61,6 +61,12 @@ namespace StringTasksApp
                 case 8:
                     MethodNamber_8();
                     break;
+                case 9:
+                    MethodNamber_9();
+                    break;
+                case 10:
+                    MethodNamber_10();
+                    break;
                 default:
                     throw new Exception("There is no such task !");
             }
@@ -95,6 +101,12 @@ namespace StringTasksApp
                     break;
                 case 8:
                     Console.WriteLine("Write a program in C# Sharp to copy one string to another string.\n\n");
+                    break;
+                case 9:
+                    Console.WriteLine("Write a program in C# Sharp to count a total number of vowel or consonant in a string.\n\n");
+                    break;
+                case 10:
+                    Console.WriteLine("Write a program in C# Sharp to find maximum occurring character in a string.\n\n");
                     break;
                 default:
                     throw new Exception("There is no such task !");
@@ -207,6 +219,53 @@ namespace StringTasksApp
             Console.WriteLine($"\nThe Second string is :{strCopied}");
         }
 
+        static void MethodNamber_9()
+        {
+            string str = EnterString().ToLower();
+
+            Console.WriteLine($"\nThe total number of vowel in the string is : {GetCountVowel(str)} ");
+            Console.WriteLine($"The total number of consonant in the string is : {GetCountConsonant(str)} ");
+        }
+
+        static void MethodNamber_10()
+        {
+            string str = EnterString();
+            bool[] arrayBool = new bool[str.Length];
+            int[] arrayChecked = new int[str.Length];
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                arrayBool[i] = true;
+                arrayChecked[i] = 1;
+            }
+
+            for (int i = 0; i < str.Length - 1; i++)
+            {
+                for (int j = i + 1; j < str.Length; j++)
+                {
+                    if (str[i] == str[j] && arrayBool[i])
+                    {
+                        arrayBool[j] = false;
+                        arrayChecked[i]++;
+                    }
+                }
+            }
+
+            int index = 0;
+            int maxCheck = 0;
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (arrayBool[i] && arrayChecked[i]>maxCheck)
+                {
+                    maxCheck = arrayChecked[i];
+                    index = i;
+                }
+            }
+
+            Console.WriteLine($"\nThe Highest frequency of character '{str[index]}' appears number of times: {arrayChecked[index]} ");
+        }
+
         static string EnterString(string nameString = "string")//input string
         {
             Console.Write($"Input the {nameString} : ");
@@ -276,6 +335,43 @@ namespace StringTasksApp
             }
 
             return String.Join("", symbols); ;
+        }
+
+        static int GetCountVowel(string str)//return count vowel in string
+        {
+            int count = 0;
+
+            foreach (var item in str)
+            {
+                if (char.IsLetter(item) && IsVowel(item))
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        static int GetCountConsonant(string str)//return count consonant in string
+        {
+            int count = 0;
+
+            foreach (var item in str)
+            {
+                if (char.IsLetter(item) && !IsVowel(item))
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        static bool IsVowel(char value)// vowel check 
+        {
+            string vowel =  "aeiouy";
+
+            return vowel.IndexOf(value) == -1 ? false : true;
         }
     }
 }

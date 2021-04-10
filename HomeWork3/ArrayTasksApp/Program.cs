@@ -61,6 +61,12 @@ namespace ArrayTasksApp
                 case 8:
                     MethodNamber_8();
                     break;
+                case 9:
+                    MethodNamber_9();
+                    break;
+                case 10:
+                    MethodNamber_10();
+                    break;
                 default:
                     throw new Exception("There is no such task !");
             }
@@ -95,6 +101,12 @@ namespace ArrayTasksApp
                     break;
                 case 8:
                     Console.WriteLine("Write a program in C# Sharp to count the frequency of each element of an array.\n\n");
+                    break;
+                case 9:
+                    Console.WriteLine("Write a program in C# Sharp to find maximum and minimum element in an array.\n\n");
+                    break;
+                case 10:
+                    Console.WriteLine("Write a programin C# Sharp to separate odd and even integers in separate arrays.\n\n");
                     break;
                 default:
                     throw new Exception("There is no such task !");
@@ -220,6 +232,23 @@ namespace ArrayTasksApp
             }
         }
 
+        static void MethodNamber_9()
+        {
+            int[] array = EnterArray(GetLength());
+
+            Console.WriteLine($"\nMaximum element is : {GetMaxElement(array)}");
+            Console.WriteLine($"Minimum element is : {GetMinElement(array)}");
+        }
+
+        static void MethodNamber_10()
+        {
+            int[] array = EnterArray(GetLength());
+
+            Console.WriteLine("\nThe Even elements are:");
+            PrintArray(GetEvenArray(array), "EvenArray");
+            Console.WriteLine("\nThe Odd elements are:");
+            PrintArray(GetOddArray(array), "OddArray");
+        }
 
         static int GetLength(string nameArray = "Array") //input of the number of array elements 
         {
@@ -350,6 +379,64 @@ namespace ArrayTasksApp
                     }
                 }
             }
+        }
+
+        static int GetMaxElement(int[] array)// return max value of array
+        {
+            int max = array[0];
+            for (int i = 1; i < array.Length; i++)
+            {
+                if (array[i] > max)
+                {
+                    max = array[i];
+                }
+            }
+            return max;
+        }
+
+        static int GetMinElement(int[] array)// return min value of array
+        {
+            int min = array[0];
+            for (int i = 1; i < array.Length; i++)
+            {
+                if (array[i] < min)
+                {
+                    min = array[i];
+                }
+            }
+            return min;
+        }
+
+        static int[] GetEvenArray(int[] array)//return even elements
+        {
+            int[] evenArray = new int[array.Length];
+            int index = 0;
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if(array[i]%2 == 0)
+                {
+                    evenArray[index++] = array[i];
+                }
+            }
+            Array.Resize(ref evenArray, index);
+            return evenArray;
+        }
+
+        static int[] GetOddArray(int[] array)//return odd elements
+        {
+            int[] oddArray = new int[array.Length];
+            int index = 0;
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] % 2 != 0)
+                {
+                    oddArray[index++] = array[i];
+                }
+            }
+            Array.Resize(ref oddArray, index);
+            return oddArray;
         }
 
     }

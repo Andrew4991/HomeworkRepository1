@@ -33,35 +33,33 @@ namespace StringTasksApp
 
         static void MethodSelection(int numberTask)//choose a task 
         {
+            Description(numberTask);
+
             switch (numberTask)
             {
                 case 1:
-                    Description(numberTask);
                     MethodNamber_1();
                     break;
                 case 2:
-                    Description(numberTask);
                     MethodNamber_2();
                     break;
                 case 3:
-                    Description(numberTask);
                     MethodNamber_3();
                     break;
                 case 4:
-                    Description(numberTask);
                     MethodNamber_4();
                     break;
                 case 5:
-                    Description(numberTask);
                     MethodNamber_5();
                     break;
                 case 6:
-                    Description(numberTask);
                     MethodNamber_6();
                     break;
                 case 7:
-                    Description(numberTask);
                     MethodNamber_7();
+                    break;
+                case 8:
+                    MethodNamber_8();
                     break;
                 default:
                     throw new Exception("There is no such task !");
@@ -94,6 +92,9 @@ namespace StringTasksApp
                     break;
                 case 7:
                     Console.WriteLine("Write a program in C# Sharp to count a total number of alphabets, digits and special characters in a string.\n\n");
+                    break;
+                case 8:
+                    Console.WriteLine("Write a program in C# Sharp to copy one string to another string.\n\n");
                     break;
                 default:
                     throw new Exception("There is no such task !");
@@ -198,11 +199,13 @@ namespace StringTasksApp
             Console.WriteLine($"Number of Special characters in the string is : {special}");
         }
 
-
-
-
-
-
+        static void MethodNamber_8()
+        {
+            string str = EnterString();
+            string strCopied = CopyString(str);
+            Console.WriteLine($"\nThe First string is :{str}");
+            Console.WriteLine($"\nThe Second string is :{strCopied}");
+        }
 
         static string EnterString(string nameString = "string")//input string
         {
@@ -262,6 +265,17 @@ namespace StringTasksApp
             }
 
             return rezult;
+        }
+
+       static string CopyString(string str)//copy one string to another string
+        {
+            string[] symbols = new string[str.Length];
+            for (int i = 0; i < str.Length; i++)
+            {
+                symbols[i] = str[i].ToString();
+            }
+
+            return String.Join("", symbols); ;
         }
     }
 }

@@ -33,35 +33,33 @@ namespace ArrayTasksApp
 
         static void MethodSelection(int numberTask)//choose a task 
         {
+            Description(numberTask);
+
             switch (numberTask)
             {
                 case 1:
-                    Description(numberTask);
                     MethodNamber_1();
                     break;
                 case 2:
-                    Description(numberTask);
                     MethodNamber_2();
                     break;
                 case 3:
-                    Description(numberTask);
                     MethodNamber_3();
                     break;
                 case 4:
-                    Description(numberTask);
                     MethodNamber_4();
                     break;
                 case 5:
-                    Description(numberTask);
                     MethodNamber_5();
                     break;
                 case 6:
-                    Description(numberTask);
                     MethodNamber_6();
                     break;
                 case 7:
-                    Description(numberTask);
                     MethodNamber_7();
+                    break;
+                case 8:
+                    MethodNamber_8();
                     break;
                 default:
                     throw new Exception("There is no such task !");
@@ -94,6 +92,9 @@ namespace ArrayTasksApp
                     break;
                 case 7:
                     Console.WriteLine("Write a program in C# Sharp to merge two arrays of same size sorted in ascending order.\n\n");
+                    break;
+                case 8:
+                    Console.WriteLine("Write a program in C# Sharp to count the frequency of each element of an array.\n\n");
                     break;
                 default:
                     throw new Exception("There is no such task !");
@@ -184,6 +185,39 @@ namespace ArrayTasksApp
 
             Console.WriteLine("\nThe merged array in ascending order is :");
             PrintArray(array);
+        }
+
+        static void MethodNamber_8()
+        {
+            int[] array = EnterArray(GetLength());
+            bool[] arrayBool = new bool[array.Length];
+            int[] arrayChecked = new int[array.Length];
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                arrayBool[i] = true;
+                arrayChecked[i] = 1;
+            }
+
+            for (int i = 0; i < array.Length - 1; i++)
+            {
+                for (int j = i + 1; j < array.Length; j++)
+                {
+                    if (array[i] == array[j] && arrayBool[i])
+                    {
+                        arrayBool[j] = false;
+                        arrayChecked[i]++;
+                    }
+                }
+            }
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (arrayBool[i])
+                {
+                    Console.WriteLine($"{array[i]}  occurs {arrayChecked[i]} times");
+                }
+            }
         }
 
 

@@ -190,7 +190,7 @@ namespace ArrayTasksApp
         static int GetLength(string nameArray = "Array") //input of the number of array elements 
         {
             Console.Write($"Enter the namber of {nameArray}: ");
-            return Int32.Parse(Console.ReadLine());
+            return Int32.Parse(Console.ReadLine().Trim());
         }
 
         static int[] EnterArray(int length, string nameArray = "Array")//input array elements 

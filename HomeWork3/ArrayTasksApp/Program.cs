@@ -199,7 +199,7 @@ namespace ArrayTasksApp
             for (int i = 0; i < length; i++)
             {
                 Console.Write($"{nameArray}[{i}] ");
-                array[i] = Int32.Parse(Console.ReadLine());
+                array[i] = Int32.Parse(Console.ReadLine().Trim());
             }
             return array;
         }

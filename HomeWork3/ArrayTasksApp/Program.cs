@@ -2,9 +2,9 @@
 
 namespace ArrayTasksApp
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             while (true)
             {
@@ -12,7 +12,7 @@ namespace ArrayTasksApp
                 {
                     Console.Clear();
                     Console.Write("Enter the namber task: ");
-                    int nuberTask = Int32.Parse(Console.ReadLine());
+                    var nuberTask = int.Parse(Console.ReadLine());
                     MethodSelection(nuberTask);
 
                 }
@@ -31,48 +31,54 @@ namespace ArrayTasksApp
             }
         }
 
-        static void MethodSelection(int numberTask)//choose a task 
+        /// <summary>
+        /// choose a task 
+        /// </summary>
+        public static void MethodSelection(int numberTask)
         {
             Description(numberTask);
 
             switch (numberTask)
             {
                 case 1:
-                    MethodNamber_1();
+                    MethodNumber1();
                     break;
                 case 2:
-                    MethodNamber_2();
+                    MethodNumber2();
                     break;
                 case 3:
-                    MethodNamber_3();
+                    MethodNumber3();
                     break;
                 case 4:
-                    MethodNamber_4();
+                    MethodNumber4();
                     break;
                 case 5:
-                    MethodNamber_5();
+                    MethodNumber5();
                     break;
                 case 6:
-                    MethodNamber_6();
+                    MethodNumber6();
                     break;
                 case 7:
-                    MethodNamber_7();
+                    MethodNumber7();
                     break;
                 case 8:
-                    MethodNamber_8();
+                    MethodNumber8();
                     break;
                 case 9:
-                    MethodNamber_9();
+                    MethodNumber9();
                     break;
                 case 10:
-                    MethodNamber_10();
+                    MethodNumber10();
                     break;
                 default:
                     throw new Exception("There is no such task !");
             }
         }
 
-        static void Description(int numberTask)//choice of description
+        /// <summary>
+        /// choice of description
+        /// </summary>
+        public static void Description(int numberTask)
         {
             Console.ForegroundColor = ConsoleColor.Green;
 
@@ -115,7 +121,7 @@ namespace ArrayTasksApp
             Console.ResetColor();
         }
 
-        static void MethodNamber_1()
+        public static void MethodNumber1()
         {
             int[] array = EnterArray(GetLength());
 
@@ -123,7 +129,7 @@ namespace ArrayTasksApp
             PrintArray(array);
         }
 
-        static void MethodNamber_2()
+        public static void MethodNumber2()
         {
             int[] array = EnterArray(GetLength());
 
@@ -133,14 +139,14 @@ namespace ArrayTasksApp
             PrintArrayReverse(array, "ReverseArray");
         }
 
-        static void MethodNamber_3()
+        public static void MethodNumber3()
         {
             int[] array = EnterArray(GetLength());
 
             Console.WriteLine($"\nSum of all elements of the array: {GetSumArray(array)}");
         }
 
-        static void MethodNamber_4()
+        public static void MethodNumber4()
         {
             int[] firstArray = EnterArray(GetLength());
             int[] secondArray = new int[firstArray.Length];
@@ -156,14 +162,14 @@ namespace ArrayTasksApp
             PrintArray(secondArray, "SecondArray");
         }
 
-        static void MethodNamber_5()
+        public static void MethodNumber5()
         {
             int[] array = EnterArray(GetLength());
 
             Console.WriteLine($"\nTotal number of duplicate elements found in the array is : {GetCountDuplicate(array)}");
         }
 
-        static void MethodNamber_6()
+        public static void MethodNumber6()
         {
             int[] array = EnterArray(GetLength());
             bool[] arrayBool = new bool[array.Length];
@@ -188,7 +194,7 @@ namespace ArrayTasksApp
             PrintCheckedArray(array, arrayBool);
         }
 
-        static void MethodNamber_7()
+        public static void MethodNumber7()
         {
             int[] firstArray = EnterArray(GetLength("FirstArray"),"FirstArray");
             int[] secondArray = EnterArray(GetLength("SecondArray"), "SecondArray");
@@ -199,7 +205,7 @@ namespace ArrayTasksApp
             PrintArray(array);
         }
 
-        static void MethodNamber_8()
+        public static void MethodNumber8()
         {
             int[] array = EnterArray(GetLength());
             bool[] arrayBool = new bool[array.Length];
@@ -232,7 +238,7 @@ namespace ArrayTasksApp
             }
         }
 
-        static void MethodNamber_9()
+        public static void MethodNumber9()
         {
             int[] array = EnterArray(GetLength());
 
@@ -240,7 +246,7 @@ namespace ArrayTasksApp
             Console.WriteLine($"Minimum element is : {GetMinElement(array)}");
         }
 
-        static void MethodNamber_10()
+        public static void MethodNumber10()
         {
             int[] array = EnterArray(GetLength());
 
@@ -250,24 +256,33 @@ namespace ArrayTasksApp
             PrintArray(GetOddArray(array), "OddArray");
         }
 
-        static int GetLength(string nameArray = "Array") //input of the number of array elements 
+        /// <summary>
+        /// input of the number of array elements 
+        /// </summary>
+        public static int GetLength(string nameArray = "Array")
         {
             Console.Write($"Enter the namber of {nameArray}: ");
-            return Int32.Parse(Console.ReadLine().Trim());
+            return int.Parse(Console.ReadLine().Trim());
         }
 
-        static int[] EnterArray(int length, string nameArray = "Array")//input array elements 
+        /// <summary>
+        /// input array elements 
+        /// </summary>
+        public static int[] EnterArray(int length, string nameArray = "Array")
         {
             int[] array = new int[length];
             for (int i = 0; i < length; i++)
             {
                 Console.Write($"{nameArray}[{i}] ");
-                array[i] = Int32.Parse(Console.ReadLine().Trim());
+                array[i] = int.Parse(Console.ReadLine().Trim());
             }
             return array;
         }
 
-        static void PrintArray(int[] array, string nameArray = "Array")//output array elements 
+        /// <summary>
+        /// output array elements 
+        /// </summary>
+        public static void PrintArray(int[] array, string nameArray = "Array")
         {
             for (int i = 0; i < array.Length; i++)
             {
@@ -275,7 +290,10 @@ namespace ArrayTasksApp
             }
         }
 
-        static void PrintArrayReverse(int[] array, string nameArray = "Array")//reverse output array elements 
+        /// <summary>
+        /// reverse output array elements 
+        /// </summary>
+        public static void PrintArrayReverse(int[] array, string nameArray = "Array")
         {
             for (int i = array.Length-1; i >=0; i--)
             {
@@ -283,7 +301,10 @@ namespace ArrayTasksApp
             }
         }
 
-        static int GetSumArray(int[] array)// calculating the sum of array elements 
+        /// <summary>
+        /// calculating the sum of array elements 
+        /// </summary>
+        public static int GetSumArray(int[] array)
         {
             int sum = 0;
             for (int i = 0; i < array.Length; i++)
@@ -293,7 +314,10 @@ namespace ArrayTasksApp
             return sum;
         }
 
-        static int GetCountDuplicate(int[] array)//found number of duplicate elements
+        /// <summary>
+        /// found number of duplicate elements
+        /// </summary>
+        public static int GetCountDuplicate(int[] array)
         {
             int countDuplicate = 0;
 
@@ -324,7 +348,10 @@ namespace ArrayTasksApp
             return countDuplicate;
         }
 
-        static void PrintCheckedArray(int[] array, bool[] checkArray, string nameArray = "Array")//output array elements with check array
+        /// <summary>
+        /// output array elements with check array
+        /// </summary>
+        public static void PrintCheckedArray(int[] array, bool[] checkArray, string nameArray = "Array")
         {
             if(array.Length == checkArray.Length)
             {
@@ -344,7 +371,10 @@ namespace ArrayTasksApp
             
         }
 
-        static int[] AddArray(int[] array1, int[] array2)//addition of arrays 
+        /// <summary>
+        /// addition of arrays 
+        /// </summary>
+        public static int[] AddArray(int[] array1, int[] array2)
         {
             int[] array = new int[array1.Length+ array2.Length];
 
@@ -359,7 +389,10 @@ namespace ArrayTasksApp
             return array;
         }
 
-        static void SortArray (int[] array)// sorted in ascending order
+        /// <summary>
+        /// sorted in ascending order
+        /// </summary>
+        public static void SortArray (int[] array)
         {
             /*
              * it could have been like that 
@@ -381,7 +414,10 @@ namespace ArrayTasksApp
             }
         }
 
-        static int GetMaxElement(int[] array)// return max value of array
+        /// <summary>
+        /// return max value of array
+        /// </summary>
+        public static int GetMaxElement(int[] array)
         {
             int max = array[0];
             for (int i = 1; i < array.Length; i++)
@@ -394,7 +430,10 @@ namespace ArrayTasksApp
             return max;
         }
 
-        static int GetMinElement(int[] array)// return min value of array
+        /// <summary>
+        /// return min value of array
+        /// </summary>
+        public static int GetMinElement(int[] array)
         {
             int min = array[0];
             for (int i = 1; i < array.Length; i++)
@@ -407,7 +446,10 @@ namespace ArrayTasksApp
             return min;
         }
 
-        static int[] GetEvenArray(int[] array)//return even elements
+        /// <summary>
+        /// return even elements
+        /// </summary>
+        public static int[] GetEvenArray(int[] array)
         {
             int[] evenArray = new int[array.Length];
             int index = 0;
@@ -423,7 +465,10 @@ namespace ArrayTasksApp
             return evenArray;
         }
 
-        static int[] GetOddArray(int[] array)//return odd elements
+        /// <summary>
+        /// return odd elements
+        /// </summary>
+        public static int[] GetOddArray(int[] array)
         {
             int[] oddArray = new int[array.Length];
             int index = 0;

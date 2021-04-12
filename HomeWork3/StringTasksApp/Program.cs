@@ -2,9 +2,9 @@
 
 namespace StringTasksApp
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             while (true)
             {
@@ -12,7 +12,7 @@ namespace StringTasksApp
                 {
                     Console.Clear();
                     Console.Write("Enter the namber task: ");
-                    int nuberTask = Int32.Parse(Console.ReadLine());
+                    var nuberTask = int.Parse(Console.ReadLine());
                     MethodSelection(nuberTask);
 
                 }
@@ -31,48 +31,54 @@ namespace StringTasksApp
             }
         }
 
-        static void MethodSelection(int numberTask)//choose a task 
+        /// <summary>
+        /// choose a task 
+        /// </summary>
+        public static void MethodSelection(int numberTask)
         {
             Description(numberTask);
 
             switch (numberTask)
             {
                 case 1:
-                    MethodNamber_1();
+                    MethodNumber1();
                     break;
                 case 2:
-                    MethodNamber_2();
+                    MethodNumber2();
                     break;
                 case 3:
-                    MethodNamber_3();
+                    MethodNumber3();
                     break;
                 case 4:
-                    MethodNamber_4();
+                    MethodNumber4();
                     break;
                 case 5:
-                    MethodNamber_5();
+                    MethodNumber5();
                     break;
                 case 6:
-                    MethodNamber_6();
+                    MethodNumber6();
                     break;
                 case 7:
-                    MethodNamber_7();
+                    MethodNumber7();
                     break;
                 case 8:
-                    MethodNamber_8();
+                    MethodNumber8();
                     break;
                 case 9:
-                    MethodNamber_9();
+                    MethodNumber9();
                     break;
                 case 10:
-                    MethodNamber_10();
+                    MethodNumber10();
                     break;
                 default:
                     throw new Exception("There is no such task !");
             }
         }
 
-        static void Description(int numberTask)//choice of description
+        /// <summary>
+        /// choice of description
+        /// </summary>
+        public static void Description(int numberTask)
         {
             Console.ForegroundColor = ConsoleColor.Green;
 
@@ -115,50 +121,50 @@ namespace StringTasksApp
             Console.ResetColor();
         }
 
-        static void MethodNamber_1()
+        public static void MethodNumber1()
         {
-            string str = EnterString();
+            var str = EnterString();
             Console.WriteLine($"\nThe string you entered is : {str}");
         }
 
-        static void MethodNamber_2()
+        public static void MethodNumber2()
         {
-            string str = EnterString();
+            var str = EnterString();
             Console.WriteLine($"\nLength of the string is : {GetLength(str)}");
         }
 
-        static void MethodNamber_3()
+        public static void MethodNumber3()
         {
-            string str = EnterString();
+            var str = EnterString();
             Console.WriteLine($"\nThe characters of the string are :");
 
-            foreach (char item in str)
+            foreach (var item in str)
             {
                 Console.Write($"{item}  ");
             }
         }
 
-        static void MethodNamber_4()
+        public static void MethodNumber4()
         {
-            string str = EnterString();
+            var str = EnterString();
             Console.WriteLine($"\nThe characters of the string in reverse are :");
 
-            for (int i = str.Length-1; i >=0; i--)
+            for (var i = str.Length-1; i >=0; i--)
             {
                 Console.Write($"{str[i]}  ");
             }
         }
 
-        static void MethodNamber_5()
+        public static void MethodNumber5()
         {
             string str = EnterString();
             Console.WriteLine($"\nTotal number of words in the string is : {GetCountWords(str)}");
         }
 
-        static void MethodNamber_6()
+        public static void MethodNumber6()
         {
-            string firstStr = EnterString("first string");
-            string secondStr = EnterString("second string");
+            var firstStr = EnterString("first string");
+            var secondStr = EnterString("second string");
 
             switch (GetCompareLength(firstStr, secondStr))
             {
@@ -169,7 +175,7 @@ namespace StringTasksApp
                     Console.WriteLine("\nThe length of the second line is greater than the first.");
                     break;
                 case 0:
-                    if (GetCompereString(firstStr, secondStr))
+                    if (GetCompareString(firstStr, secondStr))
                     {
                         Console.WriteLine("\nThe length of both strings are equal and also, both strings are equal.");
                     }
@@ -183,12 +189,12 @@ namespace StringTasksApp
             }
         }
 
-        static void MethodNamber_7()
+        public static void MethodNumber7()
         {
-            string str = EnterString();
-            int digigits = 0;
-            int alphabets = 0;
-            int special = 0;
+            var str = EnterString();
+            var digigits = 0;
+            var alphabets = 0;
+            var special = 0;
 
             foreach (char item in str)
             {
@@ -211,37 +217,37 @@ namespace StringTasksApp
             Console.WriteLine($"Number of Special characters in the string is : {special}");
         }
 
-        static void MethodNamber_8()
+        public static void MethodNumber8()
         {
-            string str = EnterString();
-            string strCopied = CopyString(str);
+            var str = EnterString();
+            var strCopied = CopyString(str);
             Console.WriteLine($"\nThe First string is :{str}");
             Console.WriteLine($"\nThe Second string is :{strCopied}");
         }
 
-        static void MethodNamber_9()
+        public static void MethodNumber9()
         {
-            string str = EnterString().ToLower();
+            var str = EnterString().ToLower();
 
             Console.WriteLine($"\nThe total number of vowel in the string is : {GetCountVowel(str)} ");
             Console.WriteLine($"The total number of consonant in the string is : {GetCountConsonant(str)} ");
         }
 
-        static void MethodNamber_10()
+        public static void MethodNumber10()
         {
-            string str = EnterString();
-            bool[] arrayBool = new bool[str.Length];
-            int[] arrayChecked = new int[str.Length];
+            var str = EnterString();
+            var arrayBool = new bool[str.Length];
+            var arrayChecked = new int[str.Length];
 
-            for (int i = 0; i < str.Length; i++)
+            for (var i = 0; i < str.Length; i++)
             {
                 arrayBool[i] = true;
                 arrayChecked[i] = 1;
             }
 
-            for (int i = 0; i < str.Length - 1; i++)
+            for (var i = 0; i < str.Length - 1; i++)
             {
-                for (int j = i + 1; j < str.Length; j++)
+                for (var j = i + 1; j < str.Length; j++)
                 {
                     if (str[i] == str[j] && arrayBool[i])
                     {
@@ -251,10 +257,10 @@ namespace StringTasksApp
                 }
             }
 
-            int index = 0;
-            int maxCheck = 0;
+            var index = 0;
+            var maxCheck = 0;
 
-            for (int i = 0; i < str.Length; i++)
+            for (var i = 0; i < str.Length; i++)
             {
                 if (arrayBool[i] && arrayChecked[i]>maxCheck)
                 {
@@ -266,15 +272,21 @@ namespace StringTasksApp
             Console.WriteLine($"\nThe Highest frequency of character '{str[index]}' appears number of times: {arrayChecked[index]} ");
         }
 
-        static string EnterString(string nameString = "string")//input string
+        /// <summary>
+        /// input string
+        /// </summary>
+        public static string EnterString(string nameString = "string")
         {
             Console.Write($"Input the {nameString} : ");
             return Console.ReadLine();
         }
 
-        static int GetLength(string str)// return length of string
+        /// <summary>
+        /// return length of string
+        /// </summary>
+        public static int GetLength(string str)
         {
-            int length = 0;
+            var length = 0;
 
             foreach (var item in str)
             {
@@ -284,14 +296,17 @@ namespace StringTasksApp
             return length;
         }
 
-        static int GetCountWords(string str)//return count words
+        /// <summary>
+        /// return count words
+        /// </summary>
+        public static int GetCountWords(string str)
         {
             str = str.Trim();
-            int count = str == string.Empty ? 0 : 1;
+            var count = str == string.Empty ? 0 : 1;
 
-            for (int i = 1; i < str.Length; i++)
+            for (var i = 1; i < str.Length; i++)
             {
-                if ((str[i] == ' ' || str[i] == '\n' || str[i] == '\t')&&(str[i-1] != ' ' && str[i-1] != '\n' && str[i-1] != '\t'))
+                if ((str[i] == ' ' || str[i] == '\n' || str[i] == '\t')&&str[i-1] != ' ' && str[i-1] != '\n' && str[i-1] != '\t')
                 {
                     count++;
                 }
@@ -300,17 +315,23 @@ namespace StringTasksApp
             return count;
         }
 
-        static int GetCompareLength(string str1, string str2)//compare 2 string: -1 for str1<str2, 0 for str1=str2 and 1 for str1>str2
+        /// <summary>
+        /// compare 2 string: -1 for str1<str2, 0 for str1=str2 and 1 for str1>str2
+        /// </summary>
+        public static int GetCompareLength(string str1, string str2)
         {
-            return str1.Length >= str2.Length ? (str1.Length > str2.Length ? (1) : (0)) : (-1);
+            return str1.Length >= str2.Length ? (str1.Length > str2.Length ? 1 : 0) : (-1);
         }
 
-       static bool GetCompereString(string str1, string str2)//compare 2 string
+        /// <summary>
+        /// compare 2 string
+        /// </summary>
+        public static bool GetCompareString(string str1, string str2)
         {
-            bool rezult = true;
+            var rezult = true;
             if (str1.Length == str2.Length)
             {
-                for (int i = 0; i < str1.Length; i++)
+                for (var i = 0; i < str1.Length; i++)
                 {
                     if (str1[i] != str2[i])
                     {
@@ -326,20 +347,26 @@ namespace StringTasksApp
             return rezult;
         }
 
-       static string CopyString(string str)//copy one string to another string
+        /// <summary>
+        /// copy one string to another string
+        /// </summary>
+        public static string CopyString(string str)
         {
-            string[] symbols = new string[str.Length];
-            for (int i = 0; i < str.Length; i++)
+            var symbols = new string[str.Length];
+            for (var i = 0; i < str.Length; i++)
             {
                 symbols[i] = str[i].ToString();
             }
 
-            return String.Join("", symbols); ;
+            return string.Join("", symbols); ;
         }
 
-        static int GetCountVowel(string str)//return count vowel in string
+        /// <summary>
+        /// return count vowel in string
+        /// </summary>
+        public static int GetCountVowel(string str)
         {
-            int count = 0;
+            var count = 0;
 
             foreach (var item in str)
             {
@@ -352,9 +379,12 @@ namespace StringTasksApp
             return count;
         }
 
-        static int GetCountConsonant(string str)//return count consonant in string
+        /// <summary>
+        /// return count consonant in string
+        /// </summary>
+        public static int GetCountConsonant(string str)
         {
-            int count = 0;
+            var count = 0;
 
             foreach (var item in str)
             {
@@ -367,11 +397,14 @@ namespace StringTasksApp
             return count;
         }
 
-        static bool IsVowel(char value)// vowel check 
+        /// <summary>
+        /// vowel check 
+        /// </summary>
+        public static bool IsVowel(char value)
         {
-            string vowel =  "aeiouy";
+            var vowel =  "aeiouy";
 
-            return vowel.IndexOf(value) == -1 ? false : true;
+            return vowel.Contains(value);
         }
     }
 }

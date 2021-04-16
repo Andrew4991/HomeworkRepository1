@@ -1,39 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TasksApp
+﻿namespace TasksApp
 {
-    public enum TasksPriority
+    internal enum TasksPriority
     {
-        low = 0,
-        middle = 1,
-        high = 2
+        Low = 0,
+        Middle = 1,
+        High = 2
     }
 
-    public enum ItemOfMenu
+    internal enum ItemOfMenu
     {
         EnterTask = 1,
-        OutputTask = 2,
-        End = 3
-    }
-
-    public enum ItemOfOutMenu
-    {
-        Filter = 1,
-        Edit = 2,
-        Delete = 3,
-        End = 4
-    }
-
-    public enum ParamsForYourTask
-    {
-        Zero = 0,
-        One = 1,
-        Two = 2,
-        Three = 3,
-        Four = 4
+        OutputTaskS = 2,
+        Filter = 3,
+        Edit = 4,
+        Delete = 5,
+        DaysToEnd = 6,
+        End = 7
     }
 }

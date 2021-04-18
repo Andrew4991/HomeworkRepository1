@@ -39,7 +39,6 @@ namespace TasksApp
 
         internal void PrintAllTasks()
         {
-            PrintIsEmpty();
             PrintWithForeach(_listOfTasks);
         }
 
@@ -80,16 +79,6 @@ namespace TasksApp
 
         internal bool IsCorrectId(int id) => _listOfTasks.Any(x => x.Id == id);
 
-        private void PrintIsEmpty()
-        {
-            Console.Clear();
-
-            if (_listOfTasks.Count == 0)
-            {
-                Console.WriteLine("There are no tasks!");
-            }
-        }
-
         private void FilterIsEmpty(IEnumerable<WeeklyTask> list)
         {
             Console.Clear();
@@ -102,7 +91,7 @@ namespace TasksApp
 
         private void PrintFilterDate(DateTime date)
         {
-            var list = _listOfTasks.Where(d => (d as PriorityTask)?.Date > date).Concat(_listOfTasks.Where(d => (d as RegularTask)?.Date > date));
+            var list = _listOfTasks.Where(d => (d as RegularTask)?.Date > date);
 
             PrintWithForeach(list);
 

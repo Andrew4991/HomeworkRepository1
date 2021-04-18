@@ -10,7 +10,7 @@
     internal enum ItemOfMenu
     {
         EnterTask = 1,
-        OutputTaskS = 2,
+        OutputTasks = 2,
         Filter = 3,
         Edit = 4,
         Delete = 5,

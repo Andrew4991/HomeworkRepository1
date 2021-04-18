@@ -16,7 +16,7 @@ namespace TasksApp
 
             foreach (var t in _listOfTasks)
             {
-                writer.Write(t.ToSave());
+                writer.Write(t.ToSaveFormat());
             }
         }
 
@@ -73,12 +73,12 @@ namespace TasksApp
         internal void DeleteTask(int id)
         {
             _listOfTasks.RemoveAt(id);
-            ReassignmentId();
+            ReassignIds();
         }
 
         internal string AlarmTask(int id) => _listOfTasks[id].GetAlarm();
 
-        internal bool CorrectId(int id) => id < _listOfTasks.Count;
+        internal bool IsCorrectId(int id) => _listOfTasks.Any(x => x.Id == id);
 
         private void PrintIsEmpty()
         {
@@ -104,7 +104,6 @@ namespace TasksApp
         {
             var list = _listOfTasks.Where(d => (d as PriorityTask)?.Date > date).Concat(_listOfTasks.Where(d => (d as RegularTask)?.Date > date));
 
-            FilterIsEmpty(list);
             PrintWithForeach(list);
 
             Console.ReadKey();
@@ -112,6 +111,8 @@ namespace TasksApp
 
         private void PrintWithForeach(IEnumerable<WeeklyTask> list)
         {
+            FilterIsEmpty(list);
+
             foreach (var t in list)
             {
                 Console.WriteLine($"{t}");
@@ -122,7 +123,6 @@ namespace TasksApp
         {
             var list = _listOfTasks.Where(p => (p as PriorityTask)?.Priority == priority);
 
-            FilterIsEmpty(list);
             PrintWithForeach(list);
 
             Console.ReadKey();
@@ -145,7 +145,7 @@ namespace TasksApp
                 };
         }
 
-        private void ReassignmentId()
+        private void ReassignIds()
         {
             for (int i = 0; i < _listOfTasks.Count; i++)
             {
@@ -157,6 +157,16 @@ namespace TasksApp
 
         private DateTime GetDateTime(string date, string time) => DateTime.Parse($"{date} {time}");
 
-        private TasksPriority GetTasksPriority(string priority) => Enum.Parse<TasksPriority>(priority);
+        private TasksPriority GetTasksPriority(string priority)
+        {
+            var rezult = Enum.Parse<TasksPriority>(priority);
+
+            if (!Enum.IsDefined(typeof(TasksPriority), rezult))
+            {
+                throw new Exception("Invalid format for priority!");
+            }
+
+            return rezult;
+        }
     }
 }

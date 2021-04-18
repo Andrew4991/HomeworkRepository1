@@ -73,7 +73,7 @@ namespace TasksApp
                 case ItemOfMenu.EnterTask:
                     InputNewTask();
                     break;
-                case ItemOfMenu.OutputTaskS:
+                case ItemOfMenu.OutputTasks:
                     PrintTasks();
                     break;
                 case ItemOfMenu.Filter:
@@ -110,7 +110,7 @@ namespace TasksApp
         {
             Console.Clear();
 
-            _service.AddTask(GetNewStringTask());
+            _service.AddTask(ReadNewStringTask());
         }
 
         private static void PrintTasks()
@@ -135,9 +135,9 @@ namespace TasksApp
             _service.PrintAllTasks();
 
             var id = GetId();
-            var stringTask = GetNewStringTask();
+            var stringTask = ReadNewStringTask();
 
-            ExeptionId(_service.CorrectId(id));
+            AssertValidId(id);
             _service.EditTask(id, stringTask);
         }
 
@@ -147,7 +147,7 @@ namespace TasksApp
 
             var id = GetId();
 
-            ExeptionId(_service.CorrectId(id));
+            AssertValidId(id);
             _service.DeleteTask(id);
         }
 
@@ -157,13 +157,13 @@ namespace TasksApp
 
             var id = GetId();
 
-            ExeptionId(_service.CorrectId(id));
+            AssertValidId(id);
 
             Console.WriteLine($"{_service.AlarmTask(id)}");
             Console.ReadKey();
         }
 
-        private static string GetNewStringTask()
+        private static string ReadNewStringTask()
         {
             Console.WriteLine("Please enter new task:");
             Console.WriteLine("For example: Do homework, 10.01.2021, 19:00\n");
@@ -184,11 +184,11 @@ namespace TasksApp
             return id;
         }
 
-        private static void ExeptionId(bool rezultFunction)
+        private static void AssertValidId(int id)
         {
-            if (!rezultFunction)
+            if (!_service.IsCorrectId(id))
             {
-                throw new Exception("There is no such task!");
+                throw new Exception("Invalid id!");
             }
         }
     }

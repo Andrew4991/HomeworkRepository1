@@ -12,6 +12,6 @@
 
         internal abstract string GetAlarm();
 
-        internal abstract string ToSave();
+        internal abstract string ToSaveFormat();
     }
 }

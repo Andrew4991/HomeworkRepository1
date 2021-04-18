@@ -21,7 +21,7 @@ namespace TasksApp
 
         internal override string GetAlarm()
         {
-            if (Date.ToShortDateString().Equals(DateTime.MinValue.ToShortDateString(), StringComparison.Ordinal))
+            if (Date == default)
             {
                 return "You have not entered a date!";
             }
@@ -31,7 +31,7 @@ namespace TasksApp
             return days > 0 ? $"Until the end of the task is left: {days}" : "Task time is up!";
         }
 
-        internal override string ToSave() => $"{Name},{Date.ToShortDateString()},{Date.ToLongTimeString()}";
+        internal override string ToSaveFormat() => $"{Name},{Date.ToShortDateString()},{Date.ToLongTimeString()}";
 
         public override string ToString() => $"{Id} -- {Name}{DateTimeToString()}";
 

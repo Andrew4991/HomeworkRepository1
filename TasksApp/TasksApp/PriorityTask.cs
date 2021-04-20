@@ -2,17 +2,16 @@
 
 namespace TasksApp
 {
-    internal class PriorityTask : RegularTask
+    internal class PriorityTask : RegularTask, IPriorityTask
     {
-        internal TasksPriority Priority { get; set; }
+        public TasksPriority Priority { get; set; }
 
-        internal PriorityTask(string name, DateTime data, TasksPriority priority) : base(name)
+        internal PriorityTask(string name, DateTime date, TasksPriority priority) : base(name, date)
         {
-            Date = data;
             Priority = priority;
         }
 
-        internal override string ToSaveFormat() => $"{Name},{Date.ToShortDateString()},{Date.ToLongTimeString()},{Priority}";
+        public override string ToSaveFormat() => $"{Name},{Date.ToShortDateString()},{Date.ToLongTimeString()},{Priority}";
 
         public override string ToString() => $"{Id} -- {Name} - {Date.ToShortDateString()} - {Date.ToLongTimeString()} - {Priority}";
     }

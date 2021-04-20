@@ -10,6 +10,11 @@ namespace TasksApp
         private readonly string _path = @"C:\Users\MONCEY\source\repos\HomeworkRepository\TasksApp\Tasks.t";
         private readonly List<WeeklyTask> _listOfTasks = new();
 
+        internal delegate void WriteOutput(string message);
+        internal WriteOutput _del;
+
+        internal void SetDelegete(WriteOutput del) => _del = del;
+
         internal void ExportTasks()
         {
             using var writer = new BinaryWriter(File.Open(_path, FileMode.OpenOrCreate));
@@ -58,21 +63,28 @@ namespace TasksApp
                 }
                 else
                 {
-                    throw new Exception("Wrong filter format !");
+                    throw new ArgumentException("Wrong filter format !");
                 }
             }
             else
             {
-                throw new Exception("Wrong filter format !");
+                throw new ArgumentException("Wrong filter format !");
             }
         }
 
-        internal void EditTask(int id, string newtask) => _listOfTasks[id] = GetTaskFromString(newtask);
+        internal void EditTask(int id, string newtask)
+        {
+            _listOfTasks[id] = GetTaskFromString(newtask);
+            _listOfTasks[id].Id = id;
+            _del?.Invoke($"Task {id} has been changed!");
+        }
 
         internal void DeleteTask(int id)
         {
             _listOfTasks.RemoveAt(id);
             ReassignIds();
+
+            _del?.Invoke($"Task {id} has been deleted!");
         }
 
         internal string AlarmTask(int id) => _listOfTasks[id].GetAlarm();
@@ -81,21 +93,24 @@ namespace TasksApp
 
         private void FilterIsEmpty(IEnumerable<WeeklyTask> list)
         {
-            Console.Clear();
-
-            if (!list.Any())
+            if (!list.Any() && _del != null)
             {
-                Console.WriteLine("There are no tasks!");
+                _del("There are no tasks!");
             }
         }
 
         private void PrintFilterDate(DateTime date)
         {
-            var list = _listOfTasks.Where(d => (d as RegularTask)?.Date > date);
+            var list = _listOfTasks.Where(d => (d as IRegularTask)?.Date > date);
 
             PrintWithForeach(list);
+        }
 
-            Console.ReadKey();
+        private void PrintFilterPriority(TasksPriority priority)
+        {
+            var list = _listOfTasks.Where(p => (p as IPriorityTask)?.Priority == priority);
+
+            PrintWithForeach(list);
         }
 
         private void PrintWithForeach(IEnumerable<WeeklyTask> list)
@@ -104,17 +119,8 @@ namespace TasksApp
 
             foreach (var t in list)
             {
-                Console.WriteLine($"{t}");
+                _del?.Invoke($"{t}");
             }
-        }
-
-        private void PrintFilterPriority(TasksPriority priority)
-        {
-            var list = _listOfTasks.Where(p => (p as PriorityTask)?.Priority == priority);
-
-            PrintWithForeach(list);
-
-            Console.ReadKey();
         }
 
         private WeeklyTask GetTaskFromString(string strForTask)
@@ -152,7 +158,7 @@ namespace TasksApp
 
             if (!Enum.IsDefined(typeof(TasksPriority), rezult))
             {
-                throw new Exception("Invalid format for priority!");
+                throw new ArgumentException("Invalid format for priority!");
             }
 
             return rezult;

@@ -8,6 +8,8 @@ namespace TasksApp
 
         internal static void Main(string[] args)
         {
+            _service.SetDelegete(Show_Message);
+
             ImportData();
 
             bool endApp = false;
@@ -92,7 +94,7 @@ namespace TasksApp
                     _service.ExportTasks();
                     return true;
                 default:
-                    throw new Exception("There is no such task!");
+                    throw new ArgumentException("There is no such task!");
             }
 
             return false;
@@ -115,6 +117,8 @@ namespace TasksApp
 
         private static void PrintTasks()
         {
+            Console.Clear();
+
             _service.PrintAllTasks();
 
             Console.ReadKey();
@@ -122,16 +126,22 @@ namespace TasksApp
 
         private static void InputFilter()
         {
+            Console.Clear();
+
             _service.PrintAllTasks();
 
             Console.WriteLine("\nPlease enter filter:");
             Console.WriteLine("Format: filter {priority}/{date} {value}\n");
 
             _service.HandlerFilter(Console.ReadLine().Trim());
+
+            Console.ReadKey();
         }
 
         private static void EditTask()
         {
+            Console.Clear();
+
             _service.PrintAllTasks();
 
             var id = GetId();
@@ -139,20 +149,28 @@ namespace TasksApp
 
             AssertValidId(id);
             _service.EditTask(id, stringTask);
+
+            Console.ReadKey();
         }
 
         private static void DeleteTask()
         {
+            Console.Clear();
+
             _service.PrintAllTasks();
 
             var id = GetId();
 
             AssertValidId(id);
             _service.DeleteTask(id);
+
+            Console.ReadKey();
         }
 
         private static void CalculateToEnd()
         {
+            Console.Clear();
+
             _service.PrintAllTasks();
 
             var id = GetId();
@@ -188,8 +206,18 @@ namespace TasksApp
         {
             if (!_service.IsCorrectId(id))
             {
-                throw new Exception("Invalid id!");
+                throw new ArgumentException("Invalid id!");
             }
+        }
+
+        private static void Show_Message(string message)
+        {
+            if (message is null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            Console.WriteLine(message);
         }
     }
 }

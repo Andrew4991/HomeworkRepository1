@@ -117,18 +117,14 @@ namespace TasksApp
 
         private static void PrintTasks()
         {
-            Console.Clear();
-
-            _service.PrintAllTasks();
+            PrintTasksAndClearConsole();
 
             Console.ReadKey();
         }
 
         private static void InputFilter()
         {
-            Console.Clear();
-
-            _service.PrintAllTasks();
+            PrintTasksAndClearConsole();
 
             Console.WriteLine("\nPlease enter filter:");
             Console.WriteLine("Format: filter {priority}/{date} {value}\n");
@@ -140,14 +136,9 @@ namespace TasksApp
 
         private static void EditTask()
         {
-            Console.Clear();
-
-            _service.PrintAllTasks();
-
-            var id = GetId();
+            var id = GetIdAndPrintAllTasks();
             var stringTask = ReadNewStringTask();
 
-            AssertValidId(id);
             _service.EditTask(id, stringTask);
 
             Console.ReadKey();
@@ -155,13 +146,7 @@ namespace TasksApp
 
         private static void DeleteTask()
         {
-            Console.Clear();
-
-            _service.PrintAllTasks();
-
-            var id = GetId();
-
-            AssertValidId(id);
+            var id = GetIdAndPrintAllTasks();
             _service.DeleteTask(id);
 
             Console.ReadKey();
@@ -169,16 +154,27 @@ namespace TasksApp
 
         private static void CalculateToEnd()
         {
-            Console.Clear();
+            var id = GetIdAndPrintAllTasks();
 
-            _service.PrintAllTasks();
+            Console.WriteLine($"{_service.AlarmTask(id)}");
+            Console.ReadKey();
+        }
+
+        private static int GetIdAndPrintAllTasks()
+        {
+            PrintTasksAndClearConsole();
 
             var id = GetId();
 
             AssertValidId(id);
+            return id;
+        }
 
-            Console.WriteLine($"{_service.AlarmTask(id)}");
-            Console.ReadKey();
+        private static void PrintTasksAndClearConsole()
+        {
+            Console.Clear();
+
+            _service.PrintAllTasks();
         }
 
         private static string ReadNewStringTask()

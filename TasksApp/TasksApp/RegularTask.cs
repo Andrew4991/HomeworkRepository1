@@ -2,9 +2,9 @@
 
 namespace TasksApp
 {
-    internal class RegularTask : WeeklyTask
+    internal class RegularTask : WeeklyTask, IRegularTask
     {
-        internal DateTime Date { get; set; }
+        public DateTime Date { get; set; }
 
         internal RegularTask() : this("Unknown")
         {
@@ -19,7 +19,7 @@ namespace TasksApp
             Date = data;
         }
 
-        internal override string GetAlarm()
+        public override string GetAlarm()
         {
             if (Date == default)
             {
@@ -31,7 +31,7 @@ namespace TasksApp
             return days > 0 ? $"Until the end of the task is left: {days}" : "Task time is up!";
         }
 
-        internal override string ToSaveFormat() => $"{Name},{Date.ToShortDateString()},{Date.ToLongTimeString()}";
+        public override string ToSaveFormat() => $"{Name},{Date.ToShortDateString()},{Date.ToLongTimeString()}";
 
         public override string ToString() => $"{Id} -- {Name}{DateTimeToString()}";
 

@@ -1,17 +1,17 @@
 ﻿namespace TasksApp
 {
-    internal abstract class WeeklyTask
+    internal abstract class WeeklyTask : IWeeklyTask
     {
-        internal int Id { get; set; }
-        internal string Name { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
 
-        internal WeeklyTask(string name)
+        public WeeklyTask(string name)
         {
             Name = name;
         }
 
-        internal abstract string GetAlarm();
+        public abstract string GetAlarm();
 
-        internal abstract string ToSaveFormat();
+        public abstract string ToSaveFormat();
     }
 }

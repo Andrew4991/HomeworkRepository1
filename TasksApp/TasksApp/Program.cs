@@ -8,6 +8,8 @@ namespace TasksApp
 
         internal static void Main(string[] args)
         {
+            _service.SetOutputWriter(ShowMessage);
+
             ImportData();
 
             bool endApp = false;
@@ -92,7 +94,7 @@ namespace TasksApp
                     _service.ExportTasks();
                     return true;
                 default:
-                    throw new Exception("There is no such task!");
+                    throw new ArgumentException("There is no such task!");
             }
 
             return false;
@@ -115,52 +117,64 @@ namespace TasksApp
 
         private static void PrintTasks()
         {
-            _service.PrintAllTasks();
+            PrintTasksAndClearConsole();
 
             Console.ReadKey();
         }
 
         private static void InputFilter()
         {
-            _service.PrintAllTasks();
+            PrintTasksAndClearConsole();
 
             Console.WriteLine("\nPlease enter filter:");
             Console.WriteLine("Format: filter {priority}/{date} {value}\n");
 
             _service.HandlerFilter(Console.ReadLine().Trim());
+
+            Console.ReadKey();
         }
 
         private static void EditTask()
         {
-            _service.PrintAllTasks();
-
-            var id = GetId();
+            var id = GetIdAndPrintAllTasks();
             var stringTask = ReadNewStringTask();
 
-            AssertValidId(id);
             _service.EditTask(id, stringTask);
+
+            Console.ReadKey();
         }
 
         private static void DeleteTask()
         {
-            _service.PrintAllTasks();
-
-            var id = GetId();
-
-            AssertValidId(id);
+            var id = GetIdAndPrintAllTasks();
             _service.DeleteTask(id);
+
+            Console.ReadKey();
         }
 
         private static void CalculateToEnd()
         {
-            _service.PrintAllTasks();
+            var id = GetIdAndPrintAllTasks();
+
+            Console.WriteLine($"{_service.AlarmTask(id)}");
+            Console.ReadKey();
+        }
+
+        private static int GetIdAndPrintAllTasks()
+        {
+            PrintTasksAndClearConsole();
 
             var id = GetId();
 
             AssertValidId(id);
+            return id;
+        }
 
-            Console.WriteLine($"{_service.AlarmTask(id)}");
-            Console.ReadKey();
+        private static void PrintTasksAndClearConsole()
+        {
+            Console.Clear();
+
+            _service.PrintAllTasks();
         }
 
         private static string ReadNewStringTask()
@@ -188,8 +202,18 @@ namespace TasksApp
         {
             if (!_service.IsCorrectId(id))
             {
-                throw new Exception("Invalid id!");
+                throw new ArgumentException("Invalid id!");
             }
+        }
+
+        private static void ShowMessage(string message)
+        {
+            if (message is null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            Console.WriteLine(message);
         }
     }
 }

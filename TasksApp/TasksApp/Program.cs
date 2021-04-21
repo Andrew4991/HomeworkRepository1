@@ -8,7 +8,7 @@ namespace TasksApp
 
         internal static void Main(string[] args)
         {
-            _service.SetDelegete(Show_Message);
+            _service.SetOutputWriter(ShowMessage);
 
             ImportData();
 
@@ -206,7 +206,7 @@ namespace TasksApp
             }
         }
 
-        private static void Show_Message(string message)
+        private static void ShowMessage(string message)
         {
             if (message is null)
             {

@@ -11,9 +11,9 @@ namespace TasksApp
         private readonly List<WeeklyTask> _listOfTasks = new();
 
         internal delegate void WriteOutput(string message);
-        internal WriteOutput _del;
+        internal WriteOutput _writeOutput;
 
-        internal void SetDelegete(WriteOutput del) => _del = del;
+        internal void SetOutputWriter(WriteOutput del) => _writeOutput = del;
 
         internal void ExportTasks()
         {
@@ -76,7 +76,7 @@ namespace TasksApp
         {
             _listOfTasks[id] = GetTaskFromString(newtask);
             _listOfTasks[id].Id = id;
-            _del?.Invoke($"Task {id} has been changed!");
+            _writeOutput?.Invoke($"Task {id} has been changed!");
         }
 
         internal void DeleteTask(int id)
@@ -84,7 +84,7 @@ namespace TasksApp
             _listOfTasks.RemoveAt(id);
             ReassignIds();
 
-            _del?.Invoke($"Task {id} has been deleted!");
+            _writeOutput?.Invoke($"Task {id} has been deleted!");
         }
 
         internal string AlarmTask(int id) => _listOfTasks[id].GetAlarm();
@@ -93,9 +93,9 @@ namespace TasksApp
 
         private void FilterIsEmpty(IEnumerable<WeeklyTask> list)
         {
-            if (!list.Any() && _del != null)
+            if (!list.Any() && _writeOutput != null)
             {
-                _del("There are no tasks!");
+                _writeOutput("There are no tasks!");
             }
         }
 
@@ -119,7 +119,7 @@ namespace TasksApp
 
             foreach (var t in list)
             {
-                _del?.Invoke($"{t}");
+                _writeOutput?.Invoke($"{t}");
             }
         }
 

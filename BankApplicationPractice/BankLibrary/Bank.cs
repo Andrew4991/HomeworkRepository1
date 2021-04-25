@@ -16,16 +16,19 @@ namespace BankLibrary
                 ? new DepositAccount(parameters.Amount)
                 : new OnDemandAccount(parameters.Amount);
 
-            account.accountHandler += parameters.accountHandler;
+            account.AccountHandlerOpen += parameters.AccountHandlerOpen;
+            account.AccountHandlerClose += parameters.AccountHandlerClose;
+            account.AccountHandlerPut += parameters.AccountHandlerPut;
+            account.AccountHandlerWithdraw += parameters.AccountHandlerWithdraw;
             account.Open();
             _accounts.Add((T)account);
         }
 
-        public void WithdrawFromAccount(int accountId, decimal sum) => HandlerAccount(accountId, acc => acc.Withdraw(sum));
+        public void WithdrawFromAccount(int accountId, decimal sum) => HandleAccountChange(accountId, acc => acc.Withdraw(sum));
 
-        public void PutOnAccount(int accountId, decimal sum) => HandlerAccount(accountId, acc => acc.Put(sum));
+        public void PutOnAccount(int accountId, decimal sum) => HandleAccountChange(accountId, acc => acc.Put(sum));
 
-        public void CloseAccount(int accountId) => HandlerAccount(accountId, acc => acc.Close());
+        public void CloseAccount(int accountId) => HandleAccountChange(accountId, acc => acc.Close());
 
         public void HandlerNextDay()
         {
@@ -69,14 +72,13 @@ namespace BankLibrary
             return -1;
         }
 
-        private void HandlerAccount(int accountId, Action<T> action)
+        private void HandleAccountChange(int accountId, Action<T> action)
         {
             AssertValidId(accountId);
 
             var indexAccount = GetIndexAccount(accountId);
             var account = _accounts[indexAccount];
             action(account);
-            _accounts.Insert(indexAccount, account);
         }
 
         private void AssertValidId(int accountId)

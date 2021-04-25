@@ -2,8 +2,6 @@
 
 namespace BankLibrary
 {
-    public delegate void AccountHandler(string message);
-
     public abstract class Account : IAccount
     {
         private static int _counter = 0;
@@ -20,7 +18,10 @@ namespace BankLibrary
 
         public virtual AccountType Type { get; private set; }
         
-        public event AccountHandler accountHandler;
+        public event AccountHandler AccountHandlerOpen;
+        public event AccountHandler AccountHandlerClose;
+        public event AccountHandler AccountHandlerPut;
+        public event AccountHandler AccountHandlerWithdraw;
 
         public Account(decimal amount)
         {
@@ -31,7 +32,7 @@ namespace BankLibrary
 
         public virtual void Open()
         {
-            HandlerAccount(AccountState.Created, $"{Type} account opened. Id: {Id}");
+            HandlerAccount(AccountState.Created, $"{Type} account opened. Id: {Id}", AccountHandlerOpen);
 
             State = AccountState.Opened;
             IncrementDays();
@@ -39,7 +40,7 @@ namespace BankLibrary
 
         public virtual void Close()
         {
-            HandlerAccount(AccountState.Opened, $"{Type} account closed. Id: {Id}");
+            HandlerAccount(AccountState.Opened, $"{Type} account closed. Id: {Id}", AccountHandlerClose);
 
             State = AccountState.Closed;
         }
@@ -48,7 +49,7 @@ namespace BankLibrary
         {
             Amount += amount;
 
-            HandlerAccount(AccountState.Opened, $"The account received: {amount:f2}. Account balance: {Amount:f2}.");
+            HandlerAccount(AccountState.Opened, $"The account received: {amount:f2}. Account balance: {Amount:f2}.", AccountHandlerPut);
         }
 
         public virtual void Withdraw(decimal amount)
@@ -60,7 +61,7 @@ namespace BankLibrary
 
             Amount -= amount;
 
-            HandlerAccount(AccountState.Opened, $"Withdrawn from the account: {amount:f2}. Account balance: {Amount:f2}.");
+            HandlerAccount(AccountState.Opened, $"Withdrawn from the account: {amount:f2}. Account balance: {Amount:f2}.", AccountHandlerWithdraw);
         }
 
         public void IncrementDays()
@@ -73,7 +74,7 @@ namespace BankLibrary
             decimal increment = Amount * Percentage;
             Amount += increment;
 
-            HandlerAccount(AccountState.Opened, $"Id: {Id}. Interest in the amount of: {increment:f2}. Account balance: {Amount:f2}.");
+            HandlerAccount(AccountState.Opened, $"Id: {Id}. Interest in the amount of: {increment:f2}. Account balance: {Amount:f2}.", AccountHandlerPut);
         }
 
         private void AssertValidState(AccountState validState)
@@ -84,10 +85,10 @@ namespace BankLibrary
             }
         }
 
-        private void HandlerAccount(AccountState validState, string message)
+        private void HandlerAccount(AccountState validState, string message, AccountHandler handler)
         {
             AssertValidState(validState);
-            accountHandler?.Invoke(message);
+            handler?.Invoke(message);
         }
     }
 }

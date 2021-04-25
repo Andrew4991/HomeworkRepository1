@@ -86,14 +86,34 @@ namespace BankApplication
         {
             Amount = ReadSum("Specify the sum to create an account: "),
             Type = ReadAccountType("Select an account type: \n 1. On-Demand \n 2. Deposit"),
-            accountHandler = NotifyAccountCreated
+            AccountHandlerOpen = NotifyChangeAccount,
+            AccountHandlerClose = NotifyChangeAccount,
+            AccountHandlerPut = NotifyChangeAccount,
+            AccountHandlerWithdraw = NotifyChangeAccount,
         });
 
-        private static void Withdraw() => _bank1.WithdrawFromAccount(ReadId("Enter account id: "), ReadSum("Specify the sum to withdraw from the account: "));
+        private static void Withdraw()
+        {
+            var id = ReadId("Enter account id: ");
+            var sum = ReadSum("Specify the sum to withdraw from the account: ");
 
-        private static void Put() => _bank1.PutOnAccount(ReadId("Enter account id: "), ReadSum("Specify the sum to put on the account: "));
+            _bank1.WithdrawFromAccount(id, sum);
+        }
 
-        private static void CloseAccount() => _bank1.CloseAccount(ReadId("Enter the account id to close: "));
+        private static void Put()
+        {
+            var id = ReadId("Enter account id: ");
+            var sum = ReadSum("Specify the sum to withdraw from the account: ");
+
+            _bank1.PutOnAccount(id, sum);
+        }
+
+        private static void CloseAccount()
+        {
+            var id = ReadId("Enter the account id to close: ");
+
+            _bank1.CloseAccount(id);
+        }
 
         private static void SkipDay() => _bank1.HandlerNextDay();
 
@@ -139,6 +159,6 @@ namespace BankApplication
             return id;
         }
 
-        private static void NotifyAccountCreated(string message) => Console.WriteLine(message);
+        private static void NotifyChangeAccount(string message) => Console.WriteLine(message);
     }
 }

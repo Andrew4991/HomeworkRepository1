@@ -8,6 +8,8 @@ namespace BankLibrary
     {
         private readonly List<T> _accounts = new();
 
+        private AccountsCollection<T> _accountsCollection;
+
         public void OpenAccount(OpenAccountParameters parameters)
         {
             AssertValidType(parameters);
@@ -37,7 +39,9 @@ namespace BankLibrary
                 throw new InvalidOperationException($"There are no accounts in the bank!");
             }
 
-            foreach (var acc in _accounts)
+            _accountsCollection = new(_accounts);
+
+            foreach (T acc in _accountsCollection)
             {
                 if (acc.State != AccountState.Closed)
                 {
@@ -49,7 +53,7 @@ namespace BankLibrary
 
         private void AssertValidType(OpenAccountParameters parameters)
         {
-            var typeAccount = GetType().GenericTypeArguments[0];
+            var typeAccount = typeof(T);
 
             if (typeAccount != typeof(Account) && 
                 ((parameters.Type == AccountType.Deposit && typeAccount != typeof(DepositAccount)) ||

@@ -8,6 +8,8 @@ namespace BankLibrary
     {
         private readonly AccountsCollection<T> _accounts = new();
 
+        private readonly Dictionary<KeyBankCell, BankCell<int>> _bankCell = new();
+
         public void OpenAccount(OpenAccountParameters parameters)
         {
             AssertValidType(parameters);
@@ -45,6 +47,32 @@ namespace BankLibrary
                     acc.CalculatePercentage();
                 }
             }
+        }
+
+        public void OpenCell(int data, string key, Action<string> handler)
+        {
+            var newCell = new BankCell<int>()
+            {
+                Id = _bankCell.Count,
+                Data = data,
+                _handlerCell = handler
+            };
+
+            newCell.Open();
+
+            _bankCell[new KeyBankCell(_bankCell.Count, key)] = newCell;
+        }
+
+        public int GetCell(int id, string key)
+        {
+            var cell = _bankCell[new KeyBankCell(id, key)];
+
+            if (cell == null)
+            {
+                throw new InvalidOperationException($"There are no cell in the bank!");
+            }
+
+            return cell.Data;
         }
 
         private void AssertValidType(OpenAccountParameters parameters)

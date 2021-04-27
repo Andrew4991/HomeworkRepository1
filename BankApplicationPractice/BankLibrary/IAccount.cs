@@ -6,17 +6,15 @@ using System.Threading.Tasks;
 
 namespace BankLibrary
 {
-    public delegate void AccountHandler(string message);
-
     public interface IAccount
     {
-        event AccountHandler AccountHandlerOpen;
+        event Action<string> AccountHandlerOpen;
 
-        event AccountHandler AccountHandlerClose;
+        event Action<string> AccountHandlerClose;
 
-        event AccountHandler AccountHandlerPut;
+        event Action<string> AccountHandlerPut;
 
-        event AccountHandler AccountHandlerWithdraw;
+        event Action<string> AccountHandlerWithdraw;
 
         int Days { get; }
 

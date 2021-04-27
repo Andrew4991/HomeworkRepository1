@@ -1,4 +1,6 @@
-﻿namespace BankLibrary
+﻿using System;
+
+namespace BankLibrary
 {
     public class OpenAccountParameters
     {
@@ -6,12 +8,12 @@
 
         public decimal Amount { get; set; }
 
-        public AccountHandler AccountHandlerOpen { get; set; }
+        public Action<string> AccountHandlerOpen { get; set; }
 
-        public AccountHandler AccountHandlerClose { get; set; }
+        public Action<string> AccountHandlerClose { get; set; }
 
-        public AccountHandler AccountHandlerPut { get; set; }
+        public Action<string> AccountHandlerPut { get; set; }
 
-        public AccountHandler AccountHandlerWithdraw { get; set; }
+        public Action<string> AccountHandlerWithdraw { get; set; }
     }
 }

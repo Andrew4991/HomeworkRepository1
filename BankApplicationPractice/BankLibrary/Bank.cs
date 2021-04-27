@@ -6,9 +6,7 @@ namespace BankLibrary
 {
     public class Bank<T> where T : IAccount
     {
-        private readonly List<T> _accounts = new();
-
-        private AccountsCollection<T> _accountsCollection;
+        private readonly AccountsCollection<T> _accounts = new();
 
         public void OpenAccount(OpenAccountParameters parameters)
         {
@@ -39,9 +37,7 @@ namespace BankLibrary
                 throw new InvalidOperationException($"There are no accounts in the bank!");
             }
 
-            _accountsCollection = new(_accounts);
-
-            foreach (T acc in _accountsCollection)
+            foreach (T acc in _accounts)
             {
                 if (acc.State != AccountState.Closed)
                 {

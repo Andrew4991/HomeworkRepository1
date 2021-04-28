@@ -18,10 +18,10 @@ namespace BankLibrary
 
         public virtual AccountType Type { get; private set; }
         
-        public event AccountHandler AccountHandlerOpen;
-        public event AccountHandler AccountHandlerClose;
-        public event AccountHandler AccountHandlerPut;
-        public event AccountHandler AccountHandlerWithdraw;
+        public event Action<string> AccountHandlerOpen;
+        public event Action<string> AccountHandlerClose;
+        public event Action<string> AccountHandlerPut;
+        public event Action<string> AccountHandlerWithdraw;
 
         public Account(decimal amount)
         {
@@ -85,7 +85,7 @@ namespace BankLibrary
             }
         }
 
-        private void HandlerAccount(AccountState validState, string message, AccountHandler handler)
+        private void HandlerAccount(AccountState validState, string message, Action<string> handler)
         {
             AssertValidState(validState);
             handler?.Invoke(message);

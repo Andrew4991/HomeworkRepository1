@@ -35,6 +35,12 @@ namespace BankApplication
                         case 6:
                             alive = false;
                             continue;
+                        case 7:
+                            OpenCell();
+                            break;
+                        case 8:
+                            GetCell();
+                            break;
                         default:
                             throw new ArgumentException("There is no such menu item!");
                     }
@@ -78,6 +84,7 @@ namespace BankApplication
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("1. Open Account \t 2. Withdraw sum \t 3. Add sum");
             Console.WriteLine("4. Close Account \t 5. Skip day \t 6. Exit program");
+            Console.WriteLine("7. Open Cell \t 8. Get Cell");
             Console.WriteLine("Enter the item number:");
             Console.ForegroundColor = color;
         }
@@ -116,6 +123,22 @@ namespace BankApplication
         }
 
         private static void SkipDay() => _bank1.HandlerNextDay();
+
+        private static void OpenCell()
+        {
+            var data = ReadDataCell();
+            var key = ReadKeyCell();
+
+            _bank1.OpenCell(data, key, NotifyChangeCell);
+        }
+
+        private static void GetCell()
+        {
+            var id = ReadId("Enter the cell id: ");
+            var key = ReadKeyCell();
+
+            Console.WriteLine($"Data in cell: {_bank1.GetCell(id, key)}");
+        }
 
         private static AccountType ReadAccountType(string message)
         {
@@ -159,6 +182,29 @@ namespace BankApplication
             return id;
         }
 
+        private static int ReadDataCell()
+        {
+            Console.WriteLine("Enter data for cell: ");
+
+            int data;
+
+            while (!int.TryParse(Console.ReadLine(), out data))
+            {
+                Console.Write("You entered the wrong data. Please try again: ");
+            }
+
+            return data;
+        }
+
+        private static string ReadKeyCell()
+        {
+            Console.WriteLine("Enter key for cell: ");
+
+            return Console.ReadLine();
+        }
+
         private static void NotifyChangeAccount(string message) => Console.WriteLine(message);
+
+        private static void NotifyChangeCell(string message) => Console.WriteLine(message);
     }
 }

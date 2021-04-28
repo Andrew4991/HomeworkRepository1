@@ -6,7 +6,9 @@ namespace BankLibrary
 {
     public class Bank<T> where T : IAccount
     {
-        private readonly List<T> _accounts = new();
+        private readonly AccountsCollection<T> _accounts = new();
+
+        private readonly Dictionary<KeyBankCell, BankCell<int>> _bankCell = new();
 
         public void OpenAccount(OpenAccountParameters parameters)
         {
@@ -37,7 +39,7 @@ namespace BankLibrary
                 throw new InvalidOperationException($"There are no accounts in the bank!");
             }
 
-            foreach (var acc in _accounts)
+            foreach (T acc in _accounts)
             {
                 if (acc.State != AccountState.Closed)
                 {
@@ -47,9 +49,35 @@ namespace BankLibrary
             }
         }
 
+        public void OpenCell(int data, string key, Action<string> handler)
+        {
+            var newCell = new BankCell<int>()
+            {
+                Id = _bankCell.Count,
+                Data = data,
+                _handlerCell = handler
+            };
+
+            newCell.Open();
+
+            _bankCell[new KeyBankCell(_bankCell.Count, key)] = newCell;
+        }
+
+        public int GetCell(int id, string key)
+        {
+            var cell = _bankCell[new KeyBankCell(id, key)];
+
+            if (cell == null)
+            {
+                throw new InvalidOperationException($"There are no cell in the bank!");
+            }
+
+            return cell.Data;
+        }
+
         private void AssertValidType(OpenAccountParameters parameters)
         {
-            var typeAccount = GetType().GenericTypeArguments[0];
+            var typeAccount = typeof(T);
 
             if (typeAccount != typeof(Account) && 
                 ((parameters.Type == AccountType.Deposit && typeAccount != typeof(DepositAccount)) ||

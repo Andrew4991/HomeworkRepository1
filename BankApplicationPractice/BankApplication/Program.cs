@@ -36,10 +36,13 @@ namespace BankApplication
                             alive = false;
                             continue;
                         case 7:
-                            OpenCell();
+                            OpenLocker();
                             break;
                         case 8:
-                            GetCell();
+                            GetLocker();
+                            break;
+                        case 9:
+                            RemoveLockers();
                             break;
                         default:
                             throw new ArgumentException("There is no such menu item!");
@@ -84,7 +87,7 @@ namespace BankApplication
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("1. Open Account \t 2. Withdraw sum \t 3. Add sum");
             Console.WriteLine("4. Close Account \t 5. Skip day \t 6. Exit program");
-            Console.WriteLine("7. Open Cell \t 8. Get Cell");
+            Console.WriteLine("7. Open locker \t 8. Get locker \t 9. Remove all lockers");
             Console.WriteLine("Enter the item number:");
             Console.ForegroundColor = color;
         }
@@ -124,20 +127,31 @@ namespace BankApplication
 
         private static void SkipDay() => _bank1.HandlerNextDay();
 
-        private static void OpenCell()
+        private static void OpenLocker()
         {
-            var data = ReadDataCell();
-            var key = ReadKeyCell();
+            var data = ReadDataLocker();
+            var key = ReadKeyLocker();
+            var id = _bank1.AddLocker(key, data);
 
-            _bank1.OpenCell(data, key, NotifyChangeCell);
+            NotifyChangeLocker($"Locker {id} created.");
         }
 
-        private static void GetCell()
+        private static void GetLocker()
         {
             var id = ReadId("Enter the cell id: ");
-            var key = ReadKeyCell();
+            var key = ReadKeyLocker();
+            var data =  _bank1.GetLockerData<int>(id, key);
 
-            Console.WriteLine($"Data in cell: {_bank1.GetCell(id, key)}");
+            NotifyChangeLocker($"Locker {id} contains: {data}.");
+        }
+
+        private static void RemoveLockers()
+        {
+            var passPhrase = ReadPassPhrase();
+
+            _bank1.VisitKgk(passPhrase);
+
+            NotifyChangeLocker($"Lockers cleared.");
         }
 
         private static AccountType ReadAccountType(string message)
@@ -182,9 +196,9 @@ namespace BankApplication
             return id;
         }
 
-        private static int ReadDataCell()
+        private static int ReadDataLocker()
         {
-            Console.WriteLine("Enter data for cell: ");
+            Console.WriteLine("Enter data for locker: ");
 
             int data;
 
@@ -196,15 +210,22 @@ namespace BankApplication
             return data;
         }
 
-        private static string ReadKeyCell()
+        private static string ReadKeyLocker()
         {
-            Console.WriteLine("Enter key for cell: ");
+            Console.WriteLine("Enter key for locker: ");
+
+            return Console.ReadLine();
+        }
+
+        private static string ReadPassPhrase()
+        {
+            Console.WriteLine("Enter passPhrase for lockers: ");
 
             return Console.ReadLine();
         }
 
         private static void NotifyChangeAccount(string message) => Console.WriteLine(message);
 
-        private static void NotifyChangeCell(string message) => Console.WriteLine(message);
+        private static void NotifyChangeLocker(string message) => Console.WriteLine(message);
     }
 }

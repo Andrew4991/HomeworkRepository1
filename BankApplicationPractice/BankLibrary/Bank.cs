@@ -6,9 +6,11 @@ namespace BankLibrary
 {
     public class Bank<T> where T : IAccount
     {
+        private const string KgkPassPhrase = "CleanUp";
+
         private readonly AccountsCollection<T> _accounts = new();
 
-        private readonly Dictionary<KeyBankCell, BankCell<int>> _bankCell = new();
+        private readonly Dictionary<KeyLocker, object> _lockers = new();
 
         public void OpenAccount(OpenAccountParameters parameters)
         {
@@ -49,30 +51,52 @@ namespace BankLibrary
             }
         }
 
-        public void OpenCell(int data, string key, Action<string> handler)
+        public int AddLocker(string keyword, object data)
         {
-            var newCell = new BankCell<int>()
-            {
-                Id = _bankCell.Count,
-                Data = data,
-                _handlerCell = handler
-            };
+            var keyLocker = new KeyLocker(_lockers.Count + 1, keyword);
 
-            newCell.Open();
+            _lockers.Add(keyLocker, data);
 
-            _bankCell[new KeyBankCell(_bankCell.Count, key)] = newCell;
+            return keyLocker.Id;
         }
 
-        public int GetCell(int id, string key)
+        public object GetLockerData(int id, string keyword)
         {
-            var cell = _bankCell[new KeyBankCell(id, key)];
+            var key = new KeyLocker(id, keyword);
 
-            if (cell == null)
+            if (!_lockers.Keys.Any(k => k.Equals(key)))
             {
-                throw new InvalidOperationException($"There are no cell in the bank!");
+                throw new ArgumentException($"Cannot find locker with ID: {id} or keyword does not match");
             }
 
-            return cell.Data;
+            var data = _lockers[key];
+
+            if (data == null)
+            {
+                throw new ArgumentException($"Locker with ID: {id} contains no data.");
+            }
+
+            return data;
+        }
+
+        public TU GetLockerData<TU>(int id, string keyword)
+        {
+            return (TU)GetLockerData(id, keyword);
+        }
+
+        public void VisitKgk(string passPhrase)
+        {
+            if (passPhrase.Equals(KgkPassPhrase))
+            {
+                foreach (var locker in _lockers)
+                {
+                    _lockers[locker.Key] = null;
+                }
+            }
+            else
+            {
+                throw new ArgumentException($"The passPhrase({passPhrase}) is not correct.");
+            }
         }
 
         private void AssertValidType(OpenAccountParameters parameters)

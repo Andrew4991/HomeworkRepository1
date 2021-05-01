@@ -62,27 +62,26 @@ namespace BankLibrary
 
         public object GetLockerData(int id, string keyword)
         {
-            foreach (var locker in _lockers)
+            var key = new KeyLocker(id, keyword);
+
+            if (!_lockers.Keys.Any(k => k.Equals(key)))
             {
-                if (locker.Key.Matches(id, keyword))
-                {
-                    return locker.Value;
-                }
+                throw new ArgumentException($"Cannot find locker with ID: {id} or keyword does not match");
             }
 
-            throw new ArgumentException($"Cannot find locker with ID: {id} or keyword does not match");
-        }
-
-        public TU GetLockerData<TU>(int id, string keyword)
-        {
-            var data = GetLockerData(id, keyword);
+            var data = _lockers[key];
 
             if (data == null)
             {
                 throw new ArgumentException($"Locker with ID: {id} contains no data.");
             }
 
-            return (TU)data;
+            return data;
+        }
+
+        public TU GetLockerData<TU>(int id, string keyword)
+        {
+            return (TU)GetLockerData(id, keyword);
         }
 
         public void VisitKgk(string passPhrase)

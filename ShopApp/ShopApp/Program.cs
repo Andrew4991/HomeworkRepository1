@@ -132,11 +132,6 @@ namespace ShopApp
             var orderId = ReadId("Enter the orderId: ");
             var order = _repository.GetOrder(orderId);
 
-            if (order == null)
-            {
-                throw new ArgumentException($"No order found from Id({orderId})!");
-            }
-
             PrintOrder(order);
         }
 
@@ -158,17 +153,7 @@ namespace ShopApp
             var customerId = ReadId("Enter the customerId: ");
             var products = _repository.GetAllProductsPurchased(customerId);
 
-            if (products.Length == 0)
-            {
-                throw new ArgumentException($"No products found from customer({customerId})!");
-            }
-
-            Console.WriteLine($"Customer {customerId} buy: ");
-
-            foreach (var product in products)
-            {
-                Console.WriteLine($"ProductId: {product.Id}    ProductName: {product.Name}    ProductPrice: {product.Price}");
-            }
+            ShowProducts(customerId, products);
         }
 
         private static void PrintUniqueProducts()
@@ -176,17 +161,7 @@ namespace ShopApp
             var customerId = ReadId("Enter the customerId: ");
             var products = _repository.GetUniqueProductsPurchased(customerId);
 
-            if (products.Length == 0)
-            {
-                throw new ArgumentException($"No products found from customer({customerId})!");
-            }
-
-            Console.WriteLine($"Customer {customerId} buy: ");
-
-            foreach (var product in products)
-            {
-                Console.WriteLine($"ProductId: {product.Id}    ProductName: {product.Name}    ProductPrice: {product.Price}");
-            }
+            ShowProducts(customerId, products);
         }
 
         private static void PrintTotalProductsPurchased()
@@ -235,7 +210,7 @@ namespace ShopApp
         private static void PrintDidPurchaseAllProducts()
         {
             var customerId = ReadId("Enter the customerId: ");
-            var countProduct = 2;
+            var countProduct = ReadSize("Enter the size array of products: ");
             var productIds = new int[countProduct];
 
             for (int i = 0; i < countProduct; i++)
@@ -295,6 +270,20 @@ namespace ShopApp
             return id;
         }
 
+        private static int ReadSize(string message)
+        {
+            Console.WriteLine(message);
+
+            int size;
+
+            while (!int.TryParse(Console.ReadLine(), out size))
+            {
+                Console.Write("You entered the wrong size. Please try again: ");
+            }
+
+            return size;
+        }
+
         private static decimal ReadPrice(string message)
         {
             Console.WriteLine(message);
@@ -307,6 +296,21 @@ namespace ShopApp
             }
 
             return price;
+        }
+
+        private static void ShowProducts(int customerId, Product[] products)
+        {
+            if (products.Length == 0)
+            {
+                throw new ArgumentException($"No products found from customer({customerId})!");
+            }
+
+            Console.WriteLine($"Customer {customerId} bought: ");
+
+            foreach (var product in products)
+            {
+                Console.WriteLine($"ProductId: {product.Id}    ProductName: {product.Name}    ProductPrice: {product.Price}");
+            }
         }
 
         private static void PrintOrder(Order order)

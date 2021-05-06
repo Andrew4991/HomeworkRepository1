@@ -13,6 +13,10 @@ namespace ShopApp
         public List<Product> Products { get; set; }
         public Database()
         {
+            Customers = new();
+            Orders = new();
+            Products = new();
+
             Customers.AddRange(new[]
             {
                 new Customer(1, "Mike"),

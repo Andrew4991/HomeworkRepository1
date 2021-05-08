@@ -8,6 +8,7 @@ namespace ShopApp
 {
     public interface IRepository
     {
+        void AddOrder(int customerId, int productId);
         Order[] GetOrders(int customerId);
         Order GetOrder(int orderId);
         decimal GetMoneySpentBy(int customerId);

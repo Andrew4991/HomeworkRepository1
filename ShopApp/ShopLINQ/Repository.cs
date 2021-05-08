@@ -3,28 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShopLINQ;
 
 namespace ShopApp
 {
     public class Repository : IRepository
     {
-        private readonly Database _db;
+        private readonly IDatabase _db;
 
         public Repository()
         {
-            _db = new();
+            _db = new Database();
         }
 
-        public Repository(Database db)
+        public Repository(IDatabase db)
         {
             _db = db;
         }
 
+        public void AddCustomer(string name)
+        {
+            _db.Customers.Add(new Customer(_db.Customers.Count+1, name));
+        }
+
+        public void AddProduct(string name, decimal price)
+        {
+            AssertValidPrice(price);
+
+            _db.Products.Add(new Product(_db.Products.Count + 1, name, price));
+        }
+
+        public void AddOrder(int customerId, int productId)
+        {
+            AssertValidCustomerId(customerId);
+            AssertValidProductId(productId);
+
+            _db.Orders.Add(new Order(_db.Orders.Count + 1, customerId, productId));
+        }
+
         public Order[] GetOrders(int customerId)
         {
-            return _db.Orders
-                   .Where(order => order.CustomerId == customerId)
-                   .ToArray();
+            return GetOrdersInternal(customerId).ToArray();
         }
 
         public Order GetOrder(int orderId)
@@ -41,27 +60,17 @@ namespace ShopApp
 
         public decimal GetMoneySpentBy(int customerId)
         {
-            return _db.Orders.Join(_db.Products,
-                   (o) => o.ProductId,
-                   (p) => p.Id,
-                   (o, p) => new { p.Price, o.CustomerId })
-                   .Where(x => x.CustomerId == customerId)
-                   .Sum(x => x.Price);
+            return GetProductOrdersJoined(customerId).Sum(x => x.product.Price);
         }
 
         public Product[] GetAllProductsPurchased(int customerId)
         {
-            return GetOrders(customerId)
-                   .Join(_db.Products, (o) => o.ProductId, (p) => p.Id, (o, p) => p)
-                   .ToArray();
+            return GetAllProductsPurchasedInternal(customerId).ToArray();
         }
 
         public Product[] GetUniqueProductsPurchased(int customerId)
         {
-            return GetOrders(customerId)
-                   .Join(_db.Products, (o) => o.ProductId, (p) => p.Id, (o, p) => p)
-                   .Distinct()
-                   .ToArray();
+            return GetAllProductsPurchasedInternal(customerId).Distinct().ToArray();
         }
 
         public int GetTotalProductsPurchased(int productId)
@@ -71,7 +80,7 @@ namespace ShopApp
 
         public bool HasEverPurchasedProduct(int customerId, int productId)
         {
-            return GetOrders(customerId).Any(x => x.ProductId == productId);
+            return GetOrdersInternal(customerId).Any(x => x.ProductId == productId);
         }
 
         public bool AreAllPurchasesHigherThan(int customerId, decimal targetPrice)
@@ -88,7 +97,7 @@ namespace ShopApp
 
         public bool DidPurchaseAllProducts(int customerId, params int[] productIds)
         {
-            return GetOrders(customerId)
+            return GetOrdersInternal(customerId)
                    .Select(o => o.ProductId)
                    .Distinct()
                    .Intersect(productIds)
@@ -97,53 +106,87 @@ namespace ShopApp
 
         public CustomerOverView GetCustomerOverview(int customerId)
         {
-            var name = _db.Customers.Single(x => x.Id == customerId).Name;
-
             return new CustomerOverView
             {
-                Name = name,
+                Name = _db.Customers.Single(x => x.Id == customerId).Name,
                 TotalMoneySpent = GetMoneySpentBy(customerId),
                 FavoriteProductName = GetFavoriteProductName(customerId),
-                MaxAmountSpentPerProducts = GetAllProductsPurchased(customerId).Max(p => p.Price),
-                TotalProductsPurchased = GetAllProductsPurchased(customerId).Length
+                MaxAmountSpentPerProducts = GetMaxAmountSpentPerProducts(customerId),
+                TotalProductsPurchased = GetAllProductsPurchasedInternal(customerId).Count()
             };
         }
 
         public List<(string productName, int numberOfPurchases)> GetProductsPurchased(int customerId)
         {
-           return GetOrders(customerId).Join(_db.Products,
-                    (o) => o.ProductId,
-                    (p) => p.Id,
-                    (o, p) => new
-                    {
-                        ProductId = p.Id,
-                        ProductName = p.Name,
-                    })
-                    .GroupBy(x => x.ProductId)
-                    .Select(g => (g.First().ProductName, g.Count()))
-                    .ToList();
+            return GetProductOrdersJoined(customerId)
+                .GroupBy(x => x.order.ProductId)
+                .Select(g => (g.First().product.Name, g.Count()))
+                .ToList();
         }
 
         private string GetFavoriteProductName(int customerId)
         {
-            return GetOrders(customerId).Join(_db.Products,
-                    (o) => o.ProductId,
-                    (p) => p.Id,
-                    (o, p) => new
-                    {
-                        ProductId = p.Id,
-                        ProductName = p.Name,
-                    })
-                    .GroupBy(x => x.ProductId)
+            return GetProductOrdersJoined(customerId)
+                    .GroupBy(x => x.order.ProductId)
                     .Select(g => new
                     {
                         ProductId = g.Key,
                         Count = g.Count(),
-                        ProductName = g.First().ProductName
+                        ProductName = g.First().product.Name
                     })
                     .OrderBy(x => x.Count)
                     .Last()
                     .ProductName;
+        }
+
+        private decimal GetMaxAmountSpentPerProducts(int customerId)
+        {
+            return GetProductOrdersJoined(customerId)
+                    .GroupBy(x => x.order.ProductId)
+                    .Select(g => new
+                    {
+                        Price = g.Count() * g.First().product.Price
+                    })
+                    .Max(x => x.Price);
+        }
+
+        private IEnumerable<Order> GetOrdersInternal(int customerId)
+        {
+            return _db.Orders.Where(order => order.CustomerId == customerId);
+        }
+
+        private IEnumerable<(Product product, Order order)> GetProductOrdersJoined(int customerId)
+        {
+            return GetOrdersInternal(customerId).Join(_db.Products, (o) => o.ProductId, (p) => p.Id, (o, p) => (p, o));
+        }
+
+        private IEnumerable<Product> GetAllProductsPurchasedInternal(int customerId)
+        {
+            return GetProductOrdersJoined(customerId).Select(p => p.product);
+        }
+
+        private void AssertValidCustomerId(int customerId)
+        {
+            if (!_db.Customers.Any(c => c.Id == customerId))
+            {
+                throw new ArgumentException($"Invalid customerId: {customerId}!");
+            }
+        }
+
+        private void AssertValidProductId(int productId)
+        {
+            if (!_db.Products.Any(p => p.Id == productId))
+            {
+                throw new ArgumentException($"Invalid productId: {productId}!");
+            }
+        }
+
+        private void AssertValidPrice(decimal price)
+        {
+            if (price<0)
+            {
+                throw new ArgumentException($"Invalid price: {price}!");
+            }
         }
     }
 }

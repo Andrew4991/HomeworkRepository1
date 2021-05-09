@@ -601,5 +601,37 @@ namespace ShopLINQ.Tests
             // assert
             product.Should().BeEmpty();
         }
+
+        [Fact]
+        public void GetProductsPurchasedForAllCustomers_Always_ReturnsRezult()
+        {
+            // arrange
+            var db = new FakeDatabase();
+            var repository = new Repository(db);
+
+            db.Customers.Add(new Customer(1, "Mike"));
+            db.Customers.Add(new Customer(2, "John"));
+
+            db.Products.Add(new Product(1, "Phone", 500));
+            db.Products.Add(new Product(2, "Notebook", 1000));
+            db.Products.Add(new Product(3, "PC", 1500));
+            db.Products.Add(new Product(4, "XBox", 800));
+
+            db.Orders.Add(new Order(1, 1, 1));
+            db.Orders.Add(new Order(2, 1, 1));
+            db.Orders.Add(new Order(3, 4, 1));
+            db.Orders.Add(new Order(4, 2, 2));
+            db.Orders.Add(new Order(5, 3, 2));
+
+            // act
+            var products = repository.GetProductsPurchasedForAllCustomers();
+
+            // assert
+            products.Should().BeEquivalentTo(
+                ("Mike", "Phone", 500, 2),
+                ("Mike", "XBox", 800, 1),
+                ("John", "Notebook", 1000, 1),
+                ("John", "PC", 1500, 1));
+        }
     }    
 }

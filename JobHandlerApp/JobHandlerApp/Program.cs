@@ -29,9 +29,12 @@ namespace JobHandlerApp
                             AddDownloadWebsite();
                             break;
                         case 4:
+                            AddPrintOrders();
+                            break;
+                        case 5:
                             Start();
                             break;
-                        case 12:
+                        case 6:
                             alive = false;
                             continue;
                         default:
@@ -75,20 +78,10 @@ namespace JobHandlerApp
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("1. Add logging to the console");
             Console.WriteLine("2. Add logging to the file");
-            Console.WriteLine("3. Add download website to file ");
-            Console.WriteLine("4. Start scheduler");
-
-
-            Console.WriteLine("5. Print unique products purchased By customerId");
-            Console.WriteLine("6. Print total products purchased By productId");
-            Console.WriteLine("7. Print has ever purchased productId By customerId");
-            Console.WriteLine("8. Print are all purchases higher than By customerId");
-            Console.WriteLine("9. Print did purchase all products By customerId");
-            Console.WriteLine("10. Print customer overview By customerId");
-            Console.WriteLine("11. Print products purchased By customerId");
-
-
-            Console.WriteLine("12. Exit program");
+            Console.WriteLine("3. Add download website to file");
+            Console.WriteLine("4. Add print orders to the console");
+            Console.WriteLine("5. Start scheduler");
+            Console.WriteLine("6. Exit program");
 
             Console.WriteLine("Enter the item number:");
             Console.ForegroundColor = color;
@@ -111,6 +104,11 @@ namespace JobHandlerApp
             var path = Console.ReadLine();
 
             _scheduler.AddHandler(new JobDownloadWebsite(path));
+        }
+
+        private static void AddPrintOrders()
+        {
+            _scheduler.AddHandler(new JobExecutionOrdersInConsole());
         }
 
         private static void Start()
@@ -142,8 +140,6 @@ namespace JobHandlerApp
             Console.Clear();
         }
 
-
-
         private static int ReadInterval()
         {
             Console.WriteLine("Please enter the program run interval in milliseconds:");
@@ -157,7 +153,6 @@ namespace JobHandlerApp
 
             return interval;
         }
-
     }
 }
 

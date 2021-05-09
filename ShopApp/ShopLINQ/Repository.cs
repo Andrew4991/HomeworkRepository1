@@ -124,6 +124,30 @@ namespace ShopApp
                 .ToList();
         }
 
+        public List<(string customerName, string productName, decimal price, int numberOfPurchases)> GetProductsPurchasedForAllCustomers()
+        {
+            List<(string customerName, string productName, decimal price, int numberOfPurchases)> rezult = new();
+
+            foreach (var id in _db.Customers.Select(x => x.Id))
+            {
+                rezult.AddRange(GetProductsPurchasedForOneCustomers(id));
+            }
+
+            return rezult;
+        }
+
+        private List<(string customerName, string productName, decimal price, int numberOfPurchases)> GetProductsPurchasedForOneCustomers(int customerId)
+        {
+            return GetProductOrdersJoined(customerId)
+                .GroupBy(x => x.order.ProductId)
+                .Select(g => (
+                _db.Customers.Single(x => x.Id == customerId).Name,
+                g.First().product.Name,
+                g.First().product.Price,
+                g.Count()))
+                .ToList();
+        }
+
         private string GetFavoriteProductName(int customerId)
         {
             return GetProductOrdersJoined(customerId)

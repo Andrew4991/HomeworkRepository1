@@ -124,9 +124,9 @@ namespace ShopApp
                 .ToList();
         }
 
-        public List<(string customerName, string productName, decimal price, int numberOfPurchases)> GetProductsPurchasedForAllCustomers()
+        public List<ProductsOverView> GetProductsPurchasedForAllCustomers()
         {
-            List<(string customerName, string productName, decimal price, int numberOfPurchases)> rezult = new();
+            List<ProductsOverView> rezult = new();
 
             foreach (var id in _db.Customers.Select(x => x.Id))
             {
@@ -136,15 +136,17 @@ namespace ShopApp
             return rezult;
         }
 
-        private List<(string customerName, string productName, decimal price, int numberOfPurchases)> GetProductsPurchasedForOneCustomers(int customerId)
+        private List<ProductsOverView> GetProductsPurchasedForOneCustomers(int customerId)
         {
             return GetProductOrdersJoined(customerId)
                 .GroupBy(x => x.order.ProductId)
-                .Select(g => (
-                _db.Customers.Single(x => x.Id == customerId).Name,
-                g.First().product.Name,
-                g.First().product.Price,
-                g.Count()))
+                .Select(g =>
+                new ProductsOverView(
+                    _db.Customers.Single(x => x.Id == customerId).Name,
+                    g.First().product.Name,
+                    g.First().product.Price,
+                    g.Count()
+                ))
                 .ToList();
         }
 

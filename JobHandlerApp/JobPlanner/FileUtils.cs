@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JobPlanner
 {
-    public static class WriterFile
+    public static class FileUtils
     {
         public static void WriteToFile(string path, string text)
         {

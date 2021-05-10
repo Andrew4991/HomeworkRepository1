@@ -628,10 +628,10 @@ namespace ShopLINQ.Tests
 
             // assert
             products.Should().BeEquivalentTo(
-                ("Mike", "Phone", 500, 2),
-                ("Mike", "XBox", 800, 1),
-                ("John", "Notebook", 1000, 1),
-                ("John", "PC", 1500, 1));
+                new ProductsOverView("Mike", "Phone", 500, 2),
+                new ProductsOverView("Mike", "XBox", 800, 1),
+                new ProductsOverView("John", "Notebook", 1000, 1),
+                new ProductsOverView("John", "PC", 1500, 1));
         }
     }    
 }

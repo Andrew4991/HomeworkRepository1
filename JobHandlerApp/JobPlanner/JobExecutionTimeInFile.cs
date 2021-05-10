@@ -5,22 +5,13 @@ namespace JobPlanner
 {
     public class JobExecutionTimeInFile : IJob
     {
-        private bool _isAlive = true;
+        private const string _path = "ExecutionTimeLog.txt";
+
+        public bool IsAlive { get; set; } = true;
 
         public void Execute(DateTime signalTime)
         {
-            if (_isAlive)
-            {
-                try
-                {
-                    WriterFile.WriteToFile("ExecutionTimeLog.txt", signalTime.ToString(CultureInfo.InvariantCulture));
-                }
-                catch
-                {
-                    Console.WriteLine($"An error has occurred in class {GetType().Name}. DateTime: {DateTime.Now}");
-                    _isAlive = false;
-                }
-            }   
+            FileUtils.WriteToFile(_path, signalTime.ToString(CultureInfo.InvariantCulture));  
         }
     }
 }

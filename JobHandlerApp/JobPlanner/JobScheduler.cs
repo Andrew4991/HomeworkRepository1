@@ -38,7 +38,18 @@ namespace JobPlanner
         {
             foreach (var job in _jobs)
             {
-                job.Execute(@event.SignalTime);
+                if (job.IsAlive)
+                {
+                    try
+                    {
+                        job.Execute(@event.SignalTime);
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"An error has occurred in class {job.GetType().Name}. DateTime: {DateTime.Now}");
+                        job .IsAlive= false;
+                    }
+                }
             }
         }
     }

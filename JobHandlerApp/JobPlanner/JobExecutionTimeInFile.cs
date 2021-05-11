@@ -5,13 +5,13 @@ namespace JobPlanner
 {
     public class JobExecutionTimeInFile : IJob
     {
-        private const string _path = "ExecutionTimeLog.txt";
+        private const string Path = "ExecutionTimeLog.txt";
 
-        public bool IsAlive { get; set; } = true;
+        public bool IsFailed { get; set; }
 
         public void Execute(DateTime signalTime)
         {
-            FileUtils.WriteToFile(_path, signalTime.ToString(CultureInfo.InvariantCulture));  
+            FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture));  
         }
     }
 }

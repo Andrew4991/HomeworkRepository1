@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
 
 namespace JobPlanner
@@ -36,20 +37,17 @@ namespace JobPlanner
 
         private void OnTimedEvent(object sender, ElapsedEventArgs @event)
         {
-            foreach (var job in _jobs)
+            foreach (var job in _jobs.Where(j => !j.IsFailed))
             {
-                if (job.IsAlive)
-                {
-                    try
-                    {
+                 try
+                 {
                         job.Execute(@event.SignalTime);
-                    }
-                    catch
-                    {
-                        Console.WriteLine($"An error has occurred in class {job.GetType().Name}. DateTime: {DateTime.Now}");
-                        job .IsAlive= false;
-                    }
-                }
+                 }
+                 catch
+                 {
+                     Console.WriteLine($"An error has occurred in class {job.GetType().Name}. DateTime: {DateTime.Now}");
+                     job .IsFailed = true;
+                 }
             }
         }
     }

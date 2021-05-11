@@ -5,7 +5,6 @@ using Xunit;
 
 namespace ShopLINQ.Tests
 {
-    [Collection("Repository")]
     public class RepositoryTests
     {
         [Fact]
@@ -37,7 +36,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void AddProduct_ForNegativePrice_ReturnException()
+        public void AddProduct_ForNegativePrice_ThrowsException()
         {
             // arrange
             var db = new FakeDatabase();
@@ -60,7 +59,6 @@ namespace ShopLINQ.Tests
             db.Products.Add(new Product(1, "Phone", 500));
 
             var repository = new Repository(db);
-            var countBefore = db.Orders.Count;
 
             // act
             repository.AddOrder(1, 1);
@@ -69,11 +67,11 @@ namespace ShopLINQ.Tests
 
             // assert
             var countsAfter = db.Orders.Count;
-            countsAfter.Should().Be(countBefore + 3);
+            countsAfter.Should().Be(3);
         }
 
         [Fact]
-        public void AddOrder_ForNonExistingCustomer_ReturnException()
+        public void AddOrder_ForNonExistingCustomer_ThrowsException()
         {
             // arrange
             var db = new FakeDatabase();
@@ -91,7 +89,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void AddOrder_ForNonExistingProduct_ReturnException()
+        public void AddOrder_ForNonExistingProduct_ThrowsException()
         {
             // arrange
             var db = new FakeDatabase();
@@ -119,7 +117,7 @@ namespace ShopLINQ.Tests
             var orders = repository.GetOrders(-1);
 
             // assert
-            Assert.Empty(orders);
+            orders.Should().BeEmpty();
         }
 
         [Fact]
@@ -139,7 +137,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void GetOrder_ForNonExistingOrder_ReturnException()
+        public void GetOrder_ForNonExistingOrder_ThrowsException()
         {
             // arrange
             var db = new FakeDatabase();
@@ -189,7 +187,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void GetMoneySpentBy_ForUnExistingCustomer_ReturnsZero()
+        public void GetMoneySpentBy_ForNonExistingCustomer_ReturnsZero()
         {
             // arrange
             var db = new FakeDatabase();
@@ -221,7 +219,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void GetAllProductsPurchased_ForUnExistingCustomer_ReturnsEmpty()
+        public void GetAllProductsPurchased_ForNonExistingCustomer_ReturnsEmpty()
         {
             // arrange
             var db = new FakeDatabase();
@@ -244,6 +242,7 @@ namespace ShopLINQ.Tests
             db.Customers.Add(new Customer(1, "Mike"));
             db.Products.Add(new Product(1, "Phone", 500));
             db.Orders.Add(new Order(1, 1, 1));
+            db.Orders.Add(new Order(2, 1, 1));
 
             // act
             var products = repository.GetUniqueProductsPurchased(1);
@@ -253,7 +252,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void GetUniqueProductsPurchased_ForUnExistingCustomer_ReturnsEmpty()
+        public void GetUniqueProductsPurchased_ForNonExistingCustomer_ReturnsEmpty()
         {
             // arrange
             var db = new FakeDatabase();
@@ -276,16 +275,17 @@ namespace ShopLINQ.Tests
             db.Customers.Add(new Customer(1, "Mike"));
             db.Products.Add(new Product(1, "Phone", 500));
             db.Orders.Add(new Order(1, 1, 1));
+            db.Orders.Add(new Order(2, 1, 1));
 
             // act
             var count = repository.GetTotalProductsPurchased(1);
 
             // assert
-            count.Should().Be(1);
+            count.Should().Be(2);
         }
 
         [Fact]
-        public void GetTotalProductsPurchased_ForUnExistingCustomer_ReturnsZero()
+        public void GetTotalProductsPurchased_ForNonExistingCustomer_ReturnsZero()
         {
             // arrange
             var db = new FakeDatabase();
@@ -313,11 +313,11 @@ namespace ShopLINQ.Tests
             var isBought = repository.HasEverPurchasedProduct(1, 1);
 
             // assert
-            isBought.Should().Be(true);
+            isBought.Should().BeTrue();
         }
 
         [Fact]
-        public void HasEverPurchasedProduct_ForExistingCustomerAndUnExistingProduct_ReturnsFalse()
+        public void HasEverPurchasedProduct_ForExistingCustomerAndNonExistingProduct_ReturnsFalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -334,7 +334,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void HasEverPurchasedProduct_ForUnExistingCustomerAndExistingProduct_ReturnsFalse()
+        public void HasEverPurchasedProduct_ForNonExistingCustomerAndExistingProduct_ReturnsFalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -351,7 +351,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void HasEverPurchasedProduct_ForUnExistingCustomerAndUnExistingProduct_ReturnsFalse()
+        public void HasEverPurchasedProduct_ForNonExistingCustomerAndNonExistingProduct_ReturnsFalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -403,7 +403,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void AreAllPurchasesHigherThan_ForUnExistingCustomerAndLowPrice_Returnsfalse()
+        public void AreAllPurchasesHigherThan_ForNonExistingCustomerAndLowPrice_Returnsfalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -421,7 +421,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void AreAllPurchasesHigherThan_ForUnExistingCustomerAndHighPrice_Returnsfalse()
+        public void AreAllPurchasesHigherThan_ForNonExistingCustomerAndHighPrice_Returnsfalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -439,7 +439,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void DidPurchaseAllProducts_ForNull_ReturnException()
+        public void DidPurchaseAllProducts_ForNull_ThrowsException()
         {
             // arrange
             var db = new FakeDatabase();
@@ -472,7 +472,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void DidPurchaseAllProducts_ForExistingCustomerAndUnExistingProduct_ReturnsFalse()
+        public void DidPurchaseAllProducts_ForExistingCustomerAndNonExistingProduct_ReturnsFalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -491,7 +491,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void DidPurchaseAllProducts_ForUnExistingCustomerAndExistingProduct_ReturnsFalse()
+        public void DidPurchaseAllProducts_ForNonExistingCustomerAndExistingProduct_ReturnsFalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -510,7 +510,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void DidPurchaseAllProducts_ForUnExistingCustomerAndUnExistingProduct_ReturnsFalse()
+        public void DidPurchaseAllProducts_ForNonExistingCustomerAndNonExistingProduct_ReturnsFalse()
         {
             // arrange
             var db = new FakeDatabase();
@@ -557,7 +557,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void GetCustomerOverview_ForNonExistingOrder_ReturnException()
+        public void GetCustomerOverview_ForNonExistingOrder_ThrowsException()
         {
             // arrange
             var db = new FakeDatabase();
@@ -589,7 +589,7 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void GetProductsPurchased_ForUnExistingCustomer_ReturnsEmpty()
+        public void GetProductsPurchased_ForNonExistingCustomer_ReturnsEmpty()
         {
             // arrange
             var db = new FakeDatabase();

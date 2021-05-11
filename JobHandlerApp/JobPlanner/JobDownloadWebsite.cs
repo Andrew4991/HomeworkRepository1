@@ -7,7 +7,7 @@ namespace JobPlanner
     {
         private readonly string _path;
 
-        public bool IsAlive { get; set; } = true;
+        public bool IsFailed { get; set; }
 
         public JobDownloadWebsite(string path)
         {

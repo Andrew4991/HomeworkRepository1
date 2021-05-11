@@ -4,7 +4,7 @@ namespace JobPlanner
 {
     public interface IJob
     {
-        public bool IsAlive { get; set; }
+        bool IsFailed { get; set; }
 
         void Execute(DateTime signalTime);
     }

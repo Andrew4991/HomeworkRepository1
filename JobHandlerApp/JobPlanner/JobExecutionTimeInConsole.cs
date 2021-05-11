@@ -4,7 +4,7 @@ namespace JobPlanner
 {
     public class JobExecutionTimeInConsole : IJob
     {
-        public bool IsAlive { get; set; } = true;
+        public bool IsFailed { get; set; }
 
         public void Execute(DateTime signalTime)
         {

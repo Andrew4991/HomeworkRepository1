@@ -5,7 +5,7 @@ namespace JobPlanner
 {
     public class JobExecutionOrdersInConsole : IJob
     {
-        public bool IsAlive { get; set; } = true;
+        public bool IsFailed { get; set; }
 
         public void Execute(DateTime signalTime)
         {

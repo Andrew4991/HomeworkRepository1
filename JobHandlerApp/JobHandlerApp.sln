@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobHandlerApp", "JobHandlerApp\JobHandlerApp.csproj", "{CDE86319-ADA3-43C0-BC4D-1F20FC3AF01B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobPlanner", "JobPlanner\JobPlanner.csproj", "{45901302-825A-4036-B792-0B215F977951}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CDE86319-ADA3-43C0-BC4D-1F20FC3AF01B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE86319-ADA3-43C0-BC4D-1F20FC3AF01B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE86319-ADA3-43C0-BC4D-1F20FC3AF01B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE86319-ADA3-43C0-BC4D-1F20FC3AF01B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45901302-825A-4036-B792-0B215F977951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45901302-825A-4036-B792-0B215F977951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45901302-825A-4036-B792-0B215F977951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45901302-825A-4036-B792-0B215F977951}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {26CC3B13-545C-4C97-8FF8-CF45692ABBCA}
+	EndGlobalSection
+EndGlobal

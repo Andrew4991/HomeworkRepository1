@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ShopLINQ">
+      <HintPath>..\..\ShopApp\ShopLINQ\bin\Debug\net5.0\ShopLINQ.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

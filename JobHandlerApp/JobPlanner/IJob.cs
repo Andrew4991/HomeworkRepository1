@@ -6,6 +6,8 @@ namespace JobPlanner
     {
         bool IsFailed { get; set; }
 
+        DateTime StartJob { get; set; }
+
         void Execute(DateTime signalTime);
     }
 }

@@ -32,9 +32,21 @@ namespace JobHandlerApp
                             AddPrintOrders();
                             break;
                         case 5:
-                            Start();
+                            AddLogToConsoleByDate();
                             break;
                         case 6:
+                            AddLogToFileByDate();
+                            break;
+                        case 7:
+                            AddDownloadWebsiteByDate();
+                            break;
+                        case 8:
+                            AddPrintOrdersByDate();
+                            break;
+                        case 9:
+                            Start();
+                            break;
+                        case 10:
                             alive = false;
                             continue;
                         default:
@@ -80,8 +92,12 @@ namespace JobHandlerApp
             Console.WriteLine("2. Add logging to the file");
             Console.WriteLine("3. Add download website to file");
             Console.WriteLine("4. Add print orders to the console");
-            Console.WriteLine("5. Start scheduler");
-            Console.WriteLine("6. Exit program");
+            Console.WriteLine("5. Add logging to console by date");
+            Console.WriteLine("6. Add logging to file by date");
+            Console.WriteLine("7. Add download website to file by date");
+            Console.WriteLine("8. Add print orders to console by date");
+            Console.WriteLine("9. Start scheduler");
+            Console.WriteLine("10. Exit program");
 
             Console.WriteLine("Enter the item number:");
             Console.ForegroundColor = color;
@@ -109,6 +125,30 @@ namespace JobHandlerApp
         private static void AddPrintOrders()
         {
             _scheduler.AddHandler(new JobExecutionOrdersInConsole());
+        }
+
+        private static void AddLogToConsoleByDate()
+        {
+            _scheduler.AddHandler(new JobExecutionTimeInConsole(ReadStartDate()));
+        }
+
+        private static void AddLogToFileByDate()
+        {
+            _scheduler.AddHandler(new JobExecutionTimeInFile(ReadStartDate()));
+        }
+
+        private static void AddDownloadWebsiteByDate()
+        {
+            Console.WriteLine("Input website address: ");
+
+            var path = Console.ReadLine();
+
+            _scheduler.AddHandler(new JobDownloadWebsite(path, ReadStartDate()));
+        }
+
+        private static void AddPrintOrdersByDate()
+        {
+            _scheduler.AddHandler(new JobExecutionOrdersInConsole(ReadStartDate()));
         }
 
         private static void Start()
@@ -152,6 +192,20 @@ namespace JobHandlerApp
             }
 
             return interval;
+        }
+
+        private static DateTime ReadStartDate()
+        {
+            Console.WriteLine("Please enter start date:");
+
+            DateTime startDate;
+
+            while (!DateTime.TryParse(Console.ReadLine(), out startDate))
+            {
+                Console.Write("You entered the wrong start date. Please try again: ");
+            }
+
+            return startDate;
         }
     }
 }

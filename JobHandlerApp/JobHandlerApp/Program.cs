@@ -32,16 +32,16 @@ namespace JobHandlerApp
                             AddPrintOrders();
                             break;
                         case 5:
-                            AddLogToConsoleByDate();
+                            AddLogToConsoleOnce();
                             break;
                         case 6:
-                            AddLogToFileByDate();
+                            AddLogToFileOnce();
                             break;
                         case 7:
-                            AddDownloadWebsiteByDate();
+                            AddDownloadWebsiteOnce();
                             break;
                         case 8:
-                            AddPrintOrdersByDate();
+                            AddPrintOrdersOnce();
                             break;
                         case 9:
                             Start();
@@ -105,50 +105,66 @@ namespace JobHandlerApp
 
         private static void AddLogToConsole()
         {
-            _scheduler.AddHandler(new JobExecutionTimeInConsole());
+            AddLogToConsoleByDate(DateTime.MinValue);
         }
 
         private static void AddLogToFile()
         {
-            _scheduler.AddHandler(new JobExecutionTimeInFile());
+            AddLogToFileByDate(DateTime.MinValue);
         }
 
         private static void AddDownloadWebsite()
         {
-            Console.WriteLine("Input website address: ");
-
-            var path = Console.ReadLine();
-
-            _scheduler.AddHandler(new JobDownloadWebsite(path));
+            AddDownloadWebsiteByDate(DateTime.MinValue);
         }
 
         private static void AddPrintOrders()
         {
-            _scheduler.AddHandler(new JobExecutionOrdersInConsole());
+            AddPrintOrdersByDate(DateTime.MinValue);
         }
 
-        private static void AddLogToConsoleByDate()
+        private static void AddLogToConsoleOnce()
         {
-            _scheduler.AddHandler(new JobExecutionTimeInConsole(ReadStartDate()));
+            AddLogToConsoleByDate(ReadStartDate());
         }
 
-        private static void AddLogToFileByDate()
+        private static void AddLogToFileOnce()
         {
-            _scheduler.AddHandler(new JobExecutionTimeInFile(ReadStartDate()));
+            AddLogToFileByDate(ReadStartDate());
         }
 
-        private static void AddDownloadWebsiteByDate()
+        private static void AddDownloadWebsiteOnce()
+        {
+            AddDownloadWebsiteByDate(ReadStartDate());
+        }
+
+        private static void AddPrintOrdersOnce()
+        {
+            AddPrintOrdersByDate(ReadStartDate());
+        }
+
+        private static void AddLogToConsoleByDate(DateTime startTime)
+        {
+            _scheduler.AddHandler(new JobExecutionTimeInConsole(startTime));
+        }
+
+        private static void AddLogToFileByDate(DateTime startTime)
+        {
+            _scheduler.AddHandler(new JobExecutionTimeInFile(startTime));
+        }
+
+        private static void AddDownloadWebsiteByDate(DateTime startTime)
         {
             Console.WriteLine("Input website address: ");
 
             var path = Console.ReadLine();
 
-            _scheduler.AddHandler(new JobDownloadWebsite(path, ReadStartDate()));
+            _scheduler.AddHandler(new JobDownloadWebsite(path, startTime));
         }
 
-        private static void AddPrintOrdersByDate()
+        private static void AddPrintOrdersByDate(DateTime startTime)
         {
-            _scheduler.AddHandler(new JobExecutionOrdersInConsole(ReadStartDate()));
+            _scheduler.AddHandler(new JobExecutionOrdersInConsole(startTime));
         }
 
         private static void Start()

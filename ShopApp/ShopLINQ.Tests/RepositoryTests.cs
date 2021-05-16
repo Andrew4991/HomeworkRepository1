@@ -15,7 +15,8 @@ namespace ShopLINQ.Tests
         {
             // arrange
             var mock = new Mock<IDatabase>();
-            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            var customerssList = new List<Customer>();
+            mock.Setup(repo => repo.Customers).Returns(customerssList);
 
             var repository = new Repository(mock.Object);
 
@@ -23,7 +24,8 @@ namespace ShopLINQ.Tests
             repository.AddCustomer("Jonh");
 
             // assert
-            mock.Object.Customers.Should().BeEquivalentTo(new Customer(1, "Jonh"));
+            mock.VerifyGet(x => x.Customers);
+            customerssList.Should().HaveCount(1).And.BeEquivalentTo(new Customer(1, "Jonh"));
         }
 
         [Fact]
@@ -31,15 +33,16 @@ namespace ShopLINQ.Tests
         {
             // arrange
             var mock = new Mock<IDatabase>();
-            mock.Setup(repo => repo.Products).Returns(new List<Product>());
-
+            var productsList = new List<Product>();
+            mock.Setup(repo => repo.Products).Returns(productsList);
             var repository = new Repository(mock.Object);
 
             // act
             repository.AddProduct("Box", 10);
 
             // assert
-            mock.Object.Products.Should().BeEquivalentTo(new Product(1, "Box", 10));
+            mock.VerifyGet(x => x.Products);
+            productsList.Should().HaveCount(1).And.BeEquivalentTo( new Product(1, "Box", 10));
         }
 
         [Fact]
@@ -64,10 +67,10 @@ namespace ShopLINQ.Tests
         {
             // arrange
             var mock = new Mock<IDatabase>();
+            var ordersList = new List<Order>();
+            mock.Setup(repo => repo.Orders).Returns(ordersList);
             mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
             mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
-            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
-
             var repository = new Repository(mock.Object);
 
             // act
@@ -76,7 +79,11 @@ namespace ShopLINQ.Tests
             repository.AddOrder(1, 1);
 
             // assert
-            mock.Object.Orders.Count.Should().Be(3);
+            mock.VerifyGet(x => x.Orders);
+            ordersList.Should().HaveCount(3).And.BeEquivalentTo(
+                new Order(1, 1, 1),
+                new Order(2, 1, 1),
+                new Order(3, 1, 1));
         }
 
         [Theory]

@@ -9,7 +9,7 @@ namespace JobPlanner
 
         public bool IsFailed { get; set; }
 
-        public DateTime StartJob { get; set; }
+        public DateTime StartJobAt { get; set; }
 
         public JobDownloadWebsite(string path) : this(path, DateTime.MinValue)
         {
@@ -19,7 +19,7 @@ namespace JobPlanner
         public JobDownloadWebsite(string path, DateTime timeStart)
         {
             _path = "https://" + path.Replace("https://", "");
-            StartJob = timeStart;
+            StartJobAt = timeStart;
         }
 
         public void Execute(DateTime signalTime)

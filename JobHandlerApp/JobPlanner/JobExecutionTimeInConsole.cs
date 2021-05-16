@@ -6,7 +6,7 @@ namespace JobPlanner
     {
         public bool IsFailed { get; set; }
 
-        public DateTime StartJob { get; set; }
+        public DateTime StartJobAt { get; set; }
 
         public JobExecutionTimeInConsole() : this(DateTime.MinValue)
         {
@@ -15,7 +15,7 @@ namespace JobPlanner
 
         public JobExecutionTimeInConsole(DateTime timeStart)
         {
-            StartJob = timeStart;
+            StartJobAt = timeStart;
         }
 
         public void Execute(DateTime signalTime)

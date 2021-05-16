@@ -37,13 +37,13 @@ namespace JobPlanner
 
         private void OnTimedEvent(object sender, ElapsedEventArgs @event)
         {
-            foreach (var job in _jobs.Where(j => !j.IsFailed && j.StartJob <= DateTime.Now))
+            foreach (var job in _jobs.Where(j => !j.IsFailed && j.StartJobAt <= DateTime.Now))
             {
                  try
                  {
                     job.Execute(@event.SignalTime);
 
-                    if (job.StartJob != DateTime.MinValue)
+                    if (job.StartJobAt != DateTime.MinValue)
                     {
                         job.IsFailed = true;
                     }

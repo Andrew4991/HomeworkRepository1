@@ -9,7 +9,7 @@ namespace JobPlanner
 
         public bool IsFailed { get; set; }
 
-        public DateTime StartJob { get; set; }
+        public DateTime StartJobAt { get; set; }
 
         public JobExecutionTimeInFile() : this(DateTime.MinValue)
         {
@@ -18,7 +18,7 @@ namespace JobPlanner
 
         public JobExecutionTimeInFile(DateTime timeStart)
         {
-            StartJob = timeStart;
+            StartJobAt = timeStart;
         }
 
         public void Execute(DateTime signalTime)

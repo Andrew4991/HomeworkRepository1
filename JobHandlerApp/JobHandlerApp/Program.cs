@@ -105,66 +105,50 @@ namespace JobHandlerApp
 
         private static void AddLogToConsole()
         {
-            AddLogToConsoleByDate(DateTime.MinValue);
+            _scheduler.RegisterJob(new JobExecutionTimeInConsole());
         }
 
         private static void AddLogToFile()
         {
-            AddLogToFileByDate(DateTime.MinValue);
+            _scheduler.RegisterJob(new JobExecutionTimeInFile());
         }
 
         private static void AddDownloadWebsite()
-        {
-            AddDownloadWebsiteByDate(DateTime.MinValue);
-        }
-
-        private static void AddPrintOrders()
-        {
-            AddPrintOrdersByDate(DateTime.MinValue);
-        }
-
-        private static void AddLogToConsoleOnce()
-        {
-            AddLogToConsoleByDate(ReadStartDate());
-        }
-
-        private static void AddLogToFileOnce()
-        {
-            AddLogToFileByDate(ReadStartDate());
-        }
-
-        private static void AddDownloadWebsiteOnce()
-        {
-            AddDownloadWebsiteByDate(ReadStartDate());
-        }
-
-        private static void AddPrintOrdersOnce()
-        {
-            AddPrintOrdersByDate(ReadStartDate());
-        }
-
-        private static void AddLogToConsoleByDate(DateTime startTime)
-        {
-            _scheduler.AddHandler(new JobExecutionTimeInConsole(startTime));
-        }
-
-        private static void AddLogToFileByDate(DateTime startTime)
-        {
-            _scheduler.AddHandler(new JobExecutionTimeInFile(startTime));
-        }
-
-        private static void AddDownloadWebsiteByDate(DateTime startTime)
         {
             Console.WriteLine("Input website address: ");
 
             var path = Console.ReadLine();
 
-            _scheduler.AddHandler(new JobDownloadWebsite(path, startTime));
+            _scheduler.RegisterJob(new JobDownloadWebsite(path));
         }
 
-        private static void AddPrintOrdersByDate(DateTime startTime)
+        private static void AddPrintOrders()
         {
-            _scheduler.AddHandler(new JobExecutionOrdersInConsole(startTime));
+            _scheduler.RegisterJob(new JobExecutionOrdersInConsole());
+        }
+
+        private static void AddLogToConsoleOnce()
+        {
+            _scheduler.RegisterJob(new DelayedJobExecutionTimeInConsole(ReadStartDate()));
+        }
+
+        private static void AddLogToFileOnce()
+        {
+            _scheduler.RegisterJob(new DelayedJobExecutionTimeInFile(ReadStartDate()));
+        }
+
+        private static void AddDownloadWebsiteOnce()
+        {
+            Console.WriteLine("Input website address: ");
+
+            var path = Console.ReadLine();
+
+            _scheduler.RegisterJob(new DelayedJobDownloadWebsite(path, ReadStartDate()));
+        }
+
+        private static void AddPrintOrdersOnce()
+        {
+            _scheduler.RegisterJob(new DelayedJobExecutionOrdersInConsole(ReadStartDate()));
         }
 
         private static void Start()

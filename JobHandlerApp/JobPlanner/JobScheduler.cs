@@ -9,6 +9,7 @@ namespace JobPlanner
     {
         private readonly Timer _timer;
         private readonly List<IJob> _jobs = new();
+        private readonly List<IDelayedJob> _delayedJobs = new();
 
         public JobScheduler(int intervalMs)
         {
@@ -18,14 +19,19 @@ namespace JobPlanner
             _timer.Enabled = false;
         }
 
-        public void AddHandler(IJob job)
+        public void RegisterJob(IJob job)
         {
             _jobs.Add(job);
         }
 
+        public void RegisterJob(IDelayedJob job)
+        {
+            _delayedJobs.Add(job);
+        }
+
         public void Start()
         {
-            if (_jobs.Count == 0)
+            if (_jobs.Count == 0 && _delayedJobs.Count == 0)
             {
                 throw new ArgumentException("Not added jobs!");
             }
@@ -37,22 +43,38 @@ namespace JobPlanner
 
         private void OnTimedEvent(object sender, ElapsedEventArgs @event)
         {
-            foreach (var job in _jobs.Where(j => !j.IsFailed && j.StartJobAt <= DateTime.Now))
-            {
-                 try
-                 {
-                    job.Execute(@event.SignalTime);
+            ExecuteSimpleJobs(@event);
+            ExecuteDelayedJobs(@event);
+        }
 
-                    if (job.StartJobAt != DateTime.MinValue)
-                    {
-                        job.IsFailed = true;
-                    }
-                 }
-                 catch
-                 {
-                     Console.WriteLine($"An error has occurred in class {job.GetType().Name}. DateTime: {DateTime.Now}");
-                     job .IsFailed = true;
-                 }
+        private void ExecuteSimpleJobs(ElapsedEventArgs @event)
+        {
+            ExecuteJobs(_jobs, @event.SignalTime);
+        }
+
+        private void ExecuteDelayedJobs(ElapsedEventArgs @event)
+        {
+            ExecuteJobs(_delayedJobs.Select(x => x as IJob), @event.SignalTime);
+        }
+
+        private void ExecuteJobs(IEnumerable<IJob> jobs, DateTime startAt)
+        {
+            foreach (var job in jobs.Where(x => x.ShouldRun(startAt)))
+            {
+                ExecuteJob(job, startAt);
+            }
+        }
+
+        private void ExecuteJob(IJob job, DateTime signalTime)
+        {
+            try
+            {
+                job.Execute(signalTime);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                job.MarkAsFailed();
             }
         }
     }

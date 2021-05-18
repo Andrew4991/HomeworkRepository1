@@ -9,9 +9,17 @@ namespace JobPlanner
 
         public bool IsFailed { get; set; }
 
-        public JobDownloadWebsite(string path)
+        public DateTime StartJobAt { get; set; }
+
+        public JobDownloadWebsite(string path) : this(path, DateTime.MinValue)
+        {
+
+        }
+
+        public JobDownloadWebsite(string path, DateTime timeStart)
         {
             _path = "https://" + path.Replace("https://", "");
+            StartJobAt = timeStart;
         }
 
         public void Execute(DateTime signalTime)

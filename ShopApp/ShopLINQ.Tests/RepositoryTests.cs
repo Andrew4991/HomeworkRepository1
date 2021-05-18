@@ -2,6 +2,9 @@
 using FluentAssertions;
 using ShopApp;
 using Xunit;
+using Moq;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace ShopLINQ.Tests
 {
@@ -11,36 +14,45 @@ namespace ShopLINQ.Tests
         public void AddCustomer_Always_AddedSuccessfully()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            var customerssList = new List<Customer>();
+            mock.Setup(repo => repo.Customers).Returns(customerssList);
+
+            var repository = new Repository(mock.Object);
 
             // act
             repository.AddCustomer("Jonh");
 
             // assert
-            db.Customers.Should().BeEquivalentTo(new Customer(1, "Jonh"));
+            mock.VerifyGet(x => x.Customers);
+            customerssList.Should().HaveCount(1).And.BeEquivalentTo(new Customer(1, "Jonh"));
         }
 
         [Fact]
         public void AddProduct_Always_AddedSuccessfully()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            var productsList = new List<Product>();
+            mock.Setup(repo => repo.Products).Returns(productsList);
+            var repository = new Repository(mock.Object);
 
             // act
             repository.AddProduct("Box", 10);
 
             // assert
-            db.Products.Should().BeEquivalentTo(new Product(1, "Box", 10));
+            mock.VerifyGet(x => x.Products);
+            productsList.Should().HaveCount(1).And.BeEquivalentTo( new Product(1, "Box", 10));
         }
 
         [Fact]
         public void AddProduct_ForNegativePrice_ThrowsException()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+
+            var repository = new Repository(mock.Object);
 
             // act
             decimal price = -10;
@@ -54,11 +66,12 @@ namespace ShopLINQ.Tests
         public void AddOrder_Always_AddedSuccessfully()
         {
             // arrange
-            var db = new FakeDatabase();
-            db.Customers.Add( new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            var ordersList = new List<Order>();
+            mock.Setup(repo => repo.Orders).Returns(ordersList);
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            var repository = new Repository(mock.Object);
 
             // act
             repository.AddOrder(1, 1);
@@ -66,52 +79,43 @@ namespace ShopLINQ.Tests
             repository.AddOrder(1, 1);
 
             // assert
-            var countsAfter = db.Orders.Count;
-            countsAfter.Should().Be(3);
+            mock.VerifyGet(x => x.Orders);
+            ordersList.Should().HaveCount(3).And.BeEquivalentTo(
+                new Order(1, 1, 1),
+                new Order(2, 1, 1),
+                new Order(3, 1, 1));
         }
 
-        [Fact]
-        public void AddOrder_ForNonExistingCustomer_ThrowsException()
+        [Theory]
+        [InlineData(-1, 1)]
+        [InlineData(1, -1)]
+        public void AddOrder_ForNonExistingCustomerOrNonExistingProduct_ThrowsException(int customerId, int productId)
         {
             // arrange
-            var db = new FakeDatabase();
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
 
-            var repository = new Repository(db);
+            var repository = new Repository(mock.Object);
 
             // act
-            int customerId = -1;
-            Action act = () => repository.AddOrder(customerId, 1);
+            Action act = () => repository.AddOrder(customerId, productId);
 
             // assert
-            act.Should().Throw<ArgumentException>($"Invalid customerId: {customerId}!");
-        }
+            act.Should().Throw<ArgumentException>();
+        }      
 
         [Fact]
-        public void AddOrder_ForNonExistingProduct_ThrowsException()
+        public void GetOrders_ForCustomer_ReturnsEmptyResult()
         {
             // arrange
-            var db = new FakeDatabase();
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
 
-            var repository = new Repository(db);
-
-            // act
-            int productId = -1;
-            Action act = () => repository.AddOrder(1, productId);
-
-            // assert
-            act.Should().Throw<ArgumentException>($"Invalid productId: {productId}!");
-        }
-
-        [Fact]
-        public void GetOrders_ForNonExistingCustomer_ReturnsEmptyResult()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var repository = new Repository(mock.Object);
 
             // act
             var orders = repository.GetOrders(-1);
@@ -124,10 +128,12 @@ namespace ShopLINQ.Tests
         public void GetOrders_ForExistingCustomer_ReturnsResult()
         {
             // arrange
-            var db = new FakeDatabase();
-            db.Orders.Add(new Order(1, 1, 1));
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1) });
 
-            var repository = new Repository(db);
+            var repository = new Repository(mock.Object);
 
             // act
             var orders = repository.GetOrders(1);
@@ -140,8 +146,12 @@ namespace ShopLINQ.Tests
         public void GetOrder_ForNonExistingOrder_ThrowsException()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
+
+            var repository = new Repository(mock.Object);
 
             // act
             var orderId = -1;
@@ -155,11 +165,14 @@ namespace ShopLINQ.Tests
         public void GetOrder_ForExistingOrder_ReturnsResult()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
             var orderId = 1;
 
-            db.Orders.Add(new Order(orderId, 1, 1));
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(orderId, 1, 1) });
+
+            var repository = new Repository(mock.Object);
 
             // act
             var orders = repository.GetOrders(orderId);
@@ -168,48 +181,36 @@ namespace ShopLINQ.Tests
             orders.Should().BeEquivalentTo(new Order(orderId, 1, 1));
         }
 
-        [Fact]
-        public void GetMoneySpentBy_ForExistingCustomer_ReturnsResult()
+        [Theory]
+        [InlineData(1, 500)]
+        [InlineData(-1, 0)]
+        public void GetMoneySpentBy_ForCustomer_ReturnsResult(int customerId, decimal rezult)
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1) });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var money = repository.GetMoneySpentBy(1);
-
-            // assert
-            money.Should().Be(500);
-        }
-
-        [Fact]
-        public void GetMoneySpentBy_ForNonExistingCustomer_ReturnsZero()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var repository = new Repository(mock.Object);
 
             // act
-            var money = repository.GetMoneySpentBy(-1);
+            var money = repository.GetMoneySpentBy(customerId);
 
             // assert
-            money.Should().Be(0);
+            money.Should().Be(rezult);
         }
 
         [Fact]
         public void GetAllProductsPurchased_ForExistingCustomer_ReturnsResult()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1) });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
+            var repository = new Repository(mock.Object);
 
             // act
             var products = repository.GetAllProductsPurchased(1);
@@ -222,8 +223,12 @@ namespace ShopLINQ.Tests
         public void GetAllProductsPurchased_ForNonExistingCustomer_ReturnsEmpty()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
+
+            var repository = new Repository(mock.Object);
 
             // act
             var products = repository.GetAllProductsPurchased(-1);
@@ -236,13 +241,12 @@ namespace ShopLINQ.Tests
         public void GetUniqueProductsPurchased_ForExistingCustomer_ReturnsResult()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1), new Order(2, 1, 1) });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 1, 1));
+            var repository = new Repository(mock.Object);
 
             // act
             var products = repository.GetUniqueProductsPurchased(1);
@@ -255,8 +259,12 @@ namespace ShopLINQ.Tests
         public void GetUniqueProductsPurchased_ForNonExistingCustomer_ReturnsEmpty()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
+
+            var repository = new Repository(mock.Object);
 
             // act
             var products = repository.GetUniqueProductsPurchased(-1);
@@ -265,185 +273,80 @@ namespace ShopLINQ.Tests
             products.Should().BeEmpty();
         }
 
-        [Fact]
-        public void GetTotalProductsPurchased_ForExistingCustomer_ReturnsResult()
+        [Theory]
+        [InlineData(1, 2)]
+        [InlineData(-1, 0)]
+        public void GetTotalProductsPurchased_ForProductId_ReturnsResult(int productId, int rezult)
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1), new Order(2, 1, 1) });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 1, 1));
+            var repository = new Repository(mock.Object);
 
             // act
-            var count = repository.GetTotalProductsPurchased(1);
+            var count = repository.GetTotalProductsPurchased(productId);
 
             // assert
-            count.Should().Be(2);
+            count.Should().Be(rezult);
         }
 
-        [Fact]
-        public void GetTotalProductsPurchased_ForNonExistingCustomer_ReturnsZero()
+        [Theory]
+        [InlineData(1, 1, true)]
+        [InlineData(1, -1, false)]
+        [InlineData(-1, 1, false)]
+        [InlineData(-1, -1, false)]
+        public void HasEverPurchasedProduct_Always_ReturnsRezult(int customerId, int productId, bool rezult)
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1) });
+
+            var repository = new Repository(mock.Object);
 
             // act
-            var count = repository.GetTotalProductsPurchased(-1);
+            var isBought = repository.HasEverPurchasedProduct(customerId, productId);
 
             // assert
-            count.Should().Be(0);
+            isBought.Should().Be(rezult);
         }
 
-        [Fact]
-        public void HasEverPurchasedProduct_ForExistingCustomerAndExistingProduct_ReturnsTrue()
+        [Theory]
+        [InlineData(1, 0, true)]
+        [InlineData(1, 1000, false)]
+        [InlineData(-1, 0, false)]
+        [InlineData(-1, 1000, false)]
+        public void AreAllPurchasesHigherThan_Always_ReturnsRezult(int customerId, decimal targetPrice, bool rezult)
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1) });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var isBought = repository.HasEverPurchasedProduct(1, 1);
-
-            // assert
-            isBought.Should().BeTrue();
-        }
-
-        [Fact]
-        public void HasEverPurchasedProduct_ForExistingCustomerAndNonExistingProduct_ReturnsFalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Orders.Add(new Order(1, 1, 1));
+            var repository = new Repository(mock.Object);
 
             // act
-            var isBought = repository.HasEverPurchasedProduct(1, -1);
+            var isBought = repository.AreAllPurchasesHigherThan(customerId, targetPrice);
 
             // assert
-            isBought.Should().Be(false);
-        }
-
-        [Fact]
-        public void HasEverPurchasedProduct_ForNonExistingCustomerAndExistingProduct_ReturnsFalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var isBought = repository.HasEverPurchasedProduct(-1, 1);
-
-            // assert
-            isBought.Should().Be(false);
-        }
-
-        [Fact]
-        public void HasEverPurchasedProduct_ForNonExistingCustomerAndNonExistingProduct_ReturnsFalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var isBought = repository.HasEverPurchasedProduct(-1, -1);
-
-            // assert
-            isBought.Should().Be(false);
-        }
-
-        [Fact]
-        public void AreAllPurchasesHigherThan_ForExistingCustomerAndLowPrice_ReturnsTrue()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var isBought = repository.AreAllPurchasesHigherThan(1, 0);
-
-            // assert
-            isBought.Should().Be(true);
-        }
-
-        [Fact]
-        public void AreAllPurchasesHigherThan_ForExistingCustomerAndHighPrice_Returnsfalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var isBought = repository.AreAllPurchasesHigherThan(1, 1000);
-
-            // assert
-            isBought.Should().Be(false);
-        }
-
-        [Fact]
-        public void AreAllPurchasesHigherThan_ForNonExistingCustomerAndLowPrice_Returnsfalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var isBought = repository.AreAllPurchasesHigherThan(-1, 0);
-
-            // assert
-            isBought.Should().Be(false);
-        }
-
-        [Fact]
-        public void AreAllPurchasesHigherThan_ForNonExistingCustomerAndHighPrice_Returnsfalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
-
-            // act
-            var isBought = repository.AreAllPurchasesHigherThan(-1, 1000);
-
-            // assert
-            isBought.Should().Be(false);
+            isBought.Should().Be(rezult);
         }
 
         [Fact]
         public void DidPurchaseAllProducts_ForNull_ThrowsException()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
+
+            var repository = new Repository(mock.Object);
 
             // act
             Action act = () => repository.DidPurchaseAllProducts(1, null);
@@ -452,95 +355,53 @@ namespace ShopLINQ.Tests
             act.Should().Throw<ArgumentNullException>();
         }
 
-        [Fact]
-        public void DidPurchaseAllProducts_ForExistingCustomerAndExistingProduct_ReturnsTrue()
+        [Theory]
+        [InlineData(1, true, 1, 3)]
+        [InlineData(1, false, 1, 5)]
+        [InlineData(-1, false, 1, 2)]
+        [InlineData(-1, false, 1, 5)]
+        public void DidPurchaseAllProducts_ForExistingCustomerAndExistingProduct_ReturnsTrue(int customerId, bool rezult, params int[] productIds)
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>
+            {
+                new Order(1, 1, 1),
+                new Order(2, 2, 1),
+                new Order(3, 3, 1),
+                new Order(4, 4, 1)
+            });
 
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 2, 1));
-            db.Orders.Add(new Order(3, 3, 1));
-            db.Orders.Add(new Order(4, 4, 1));
-
-            // act
-            var isPurchase = repository.DidPurchaseAllProducts(1, 1, 3);
-
-            // assert
-            isPurchase.Should().Be(true);
-        }
-
-        [Fact]
-        public void DidPurchaseAllProducts_ForExistingCustomerAndNonExistingProduct_ReturnsFalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 2, 1));
-            db.Orders.Add(new Order(3, 3, 1));
-            db.Orders.Add(new Order(4, 4, 1));
+            var repository = new Repository(mock.Object);
 
             // act
-            var isPurchase = repository.DidPurchaseAllProducts(1, 1, 5);
+            var isPurchase = repository.DidPurchaseAllProducts(customerId, productIds);
 
             // assert
-            isPurchase.Should().Be(false);
-        }
-
-        [Fact]
-        public void DidPurchaseAllProducts_ForNonExistingCustomerAndExistingProduct_ReturnsFalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 2, 1));
-            db.Orders.Add(new Order(3, 3, 1));
-            db.Orders.Add(new Order(4, 4, 1));
-
-            // act
-            var isPurchase = repository.DidPurchaseAllProducts(-1, 1, 2);
-
-            // assert
-            isPurchase.Should().Be(false);
-        }
-
-        [Fact]
-        public void DidPurchaseAllProducts_ForNonExistingCustomerAndNonExistingProduct_ReturnsFalse()
-        {
-            // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
-
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 2, 1));
-            db.Orders.Add(new Order(3, 3, 1));
-            db.Orders.Add(new Order(4, 4, 1));
-
-            // act
-            var isPurchase = repository.DidPurchaseAllProducts(-1, 1, 5);
-
-            // assert
-            isPurchase.Should().Be(false);
+            isPurchase.Should().Be(rezult);
         }
 
         [Fact]
         public void GetCustomerOverview_ForExistingCustomer_ReturnsResult()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>
+            {
+                new Product(1, "Phone", 500),
+                new Product(4, "XBox", 800)
+            });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>
+            {
+                new Order(1, 1, 1),
+                new Order(2, 1, 1),
+                new Order(3, 4, 1)
+            });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Products.Add(new Product(4, "XBox", 800));
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 1, 1));
-            db.Orders.Add(new Order(3, 4, 1));
+            var repository = new Repository(mock.Object);
 
             // act
             var customer = repository.GetCustomerOverview(1);
@@ -560,8 +421,12 @@ namespace ShopLINQ.Tests
         public void GetCustomerOverview_ForNonExistingOrder_ThrowsException()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
+
+            var repository = new Repository(mock.Object);
 
             // act
             Action act = () => repository.GetCustomerOverview(-1);
@@ -574,12 +439,12 @@ namespace ShopLINQ.Tests
         public void GetProductsPurchased_ForExistingCustomer_ReturnsResult()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product> { new Product(1, "Phone", 500) });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer> { new Customer(1, "Mike") });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order> { new Order(1, 1, 1) });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Orders.Add(new Order(1, 1, 1));
+            var repository = new Repository(mock.Object);
 
             // act
             var product = repository.GetProductsPurchased(1);
@@ -592,8 +457,12 @@ namespace ShopLINQ.Tests
         public void GetProductsPurchased_ForNonExistingCustomer_ReturnsEmpty()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>());
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>());
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>());
+
+            var repository = new Repository(mock.Object);
 
             // act
             var product = repository.GetProductsPurchased(-1);
@@ -603,35 +472,44 @@ namespace ShopLINQ.Tests
         }
 
         [Fact]
-        public void GetProductsPurchasedForAllCustomers_Always_ReturnsRezult()
+        public void GetProductsPurchased_ForAllCustomers_Always_ReturnsRezult()
         {
             // arrange
-            var db = new FakeDatabase();
-            var repository = new Repository(db);
+            var mock = new Mock<IDatabase>();
+            mock.Setup(repo => repo.Products).Returns(new List<Product>
+            {
+                new Product(1, "Phone", 500),
+                new Product(2, "Notebook", 1000),
+                new Product(3, "PC", 1500),
+                new Product(4, "XBox", 800)
+            });
+            mock.Setup(repo => repo.Customers).Returns(new List<Customer>
+            {
+                new Customer(1, "Mike"),
+                new Customer(2, "John")
+            });
+            mock.Setup(repo => repo.Orders).Returns(new List<Order>
+            {
+                new Order(1, 1, 1),
+                new Order(2, 1, 1),
+                new Order(3, 4, 1),
+                new Order(4, 2, 2),
+                new Order(5, 3, 2)
+            });
 
-            db.Customers.Add(new Customer(1, "Mike"));
-            db.Customers.Add(new Customer(2, "John"));
-
-            db.Products.Add(new Product(1, "Phone", 500));
-            db.Products.Add(new Product(2, "Notebook", 1000));
-            db.Products.Add(new Product(3, "PC", 1500));
-            db.Products.Add(new Product(4, "XBox", 800));
-
-            db.Orders.Add(new Order(1, 1, 1));
-            db.Orders.Add(new Order(2, 1, 1));
-            db.Orders.Add(new Order(3, 4, 1));
-            db.Orders.Add(new Order(4, 2, 2));
-            db.Orders.Add(new Order(5, 3, 2));
+            var repository = new Repository(mock.Object);
 
             // act
             var products = repository.GetProductsPurchasedForAllCustomers();
 
             // assert
-            products.Should().BeEquivalentTo(
+            products.Should().BeEquivalentTo(new List<ProductsOverView>
+            {
                 new ProductsOverView("Mike", "Phone", 500, 2),
                 new ProductsOverView("Mike", "XBox", 800, 1),
                 new ProductsOverView("John", "Notebook", 1000, 1),
-                new ProductsOverView("John", "PC", 1500, 1));
+                new ProductsOverView("John", "PC", 1500, 1)
+            });
         }
     }    
 }

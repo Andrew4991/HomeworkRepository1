@@ -8,7 +8,7 @@ namespace JobPlanner
 
         public static void Download(string websitePath, string fileName)
         {
-            WebClient client = new WebClient();
+            var client = new WebClient();
             client.Headers.Add("user-agent", UserAgent);
             string reply = client.DownloadString(websitePath);
 

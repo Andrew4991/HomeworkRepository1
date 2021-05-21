@@ -1,2 +1,2 @@
 # ShopApp
-implement an interface IRepository
+Application describing the work of the store 

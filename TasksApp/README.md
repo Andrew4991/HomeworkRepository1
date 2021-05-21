@@ -1,5 +1,3 @@
-# Homework 4
-***
 ## TasksApp
 + Entering a task from the console in a specific format {name}, {date}, {time}, {priority}
 + It is necessary to support partial data filling, for example "Do homework, 01/10/2021", and "Do homework, 10.01.2021, 19:00"

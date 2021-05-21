@@ -133,7 +133,7 @@ namespace JobPlannerTests
         }
 
         [Fact]
-        public async Task Stop_ShouldRun_ExecutesJob()
+        public async Task Stop_ShouldRunAndCallStartStop_ExecutesJob()
         {
             // arrange
             var mockedJob = new Mock<IJob>();
@@ -152,7 +152,7 @@ namespace JobPlannerTests
         }
 
         [Fact]
-        public async Task Stop_ShouldNotRun_DoesNotExecuteJob()
+        public async Task Stop_ShouldNotRunAndCallStartStop_DoesNotExecuteJob()
         {
             // arrange
             var mockedJob = new Mock<IJob>();
@@ -171,7 +171,7 @@ namespace JobPlannerTests
         }
 
         [Fact]
-        public async Task Stop_ThrowsException_MarksJobAsFailed()
+        public async Task Stop_ThrowsException_CallMarkAsFailed()
         {
             // arrange
             var mockedJob = new Mock<IJob>();

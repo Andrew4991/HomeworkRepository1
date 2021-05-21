@@ -19,4 +19,10 @@
     <ProjectReference Include="..\JobPlanner\JobPlanner.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="ShopLINQ">
+      <HintPath>..\..\ShopApp\ShopLINQ\bin\Debug\net5.0\ShopLINQ.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

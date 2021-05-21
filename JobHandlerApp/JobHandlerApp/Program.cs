@@ -1,5 +1,6 @@
 ﻿using System;
 using JobPlanner;
+using ShopApp;
 
 namespace JobHandlerApp
 {
@@ -124,7 +125,7 @@ namespace JobHandlerApp
 
         private static void AddPrintOrders()
         {
-            _scheduler.RegisterJob(new JobExecutionOrdersInConsole());
+            _scheduler.RegisterJob(new JobExecutionOrdersInConsole(new Repository()));
         }
 
         private static void AddLogToConsoleOnce()
@@ -148,7 +149,7 @@ namespace JobHandlerApp
 
         private static void AddPrintOrdersOnce()
         {
-            _scheduler.RegisterJob(new DelayedJobExecutionOrdersInConsole(ReadStartDate()));
+            _scheduler.RegisterJob(new DelayedJobExecutionOrdersInConsole(ReadStartDate(), new Repository()));
         }
 
         private static void Start()

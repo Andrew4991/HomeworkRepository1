@@ -1,3 +1,9 @@
-# My first repository for homework
+# My repository for homework in teachmeskills
 ***
-My homework will be here 
+I have implemented 6 applications:
++BankApp
++DayOfWeekApp
++ArraysAndStringsApp
++JobHandlerApp
++ShopApp
++TasksApp

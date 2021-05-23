@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace JobPlanner
 {
     public interface IJob
     {
-        void Execute(DateTime signalTime);
+        Task Execute(DateTime signalTime, CancellationToken token);
 
-        bool ShouldRun(DateTime signalTime);
+        Task<bool> ShouldRun(DateTime signalTime);
 
         void MarkAsFailed();
     }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
 
 namespace JobPlanner
@@ -8,9 +10,9 @@ namespace JobPlanner
     {
         private const string Path = "ExecutionTimeLog.txt";
 
-        public override void Execute(DateTime signalTime)
+        public override async Task Execute(DateTime signalTime, CancellationToken token)
         {
-            FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture));  
+            await FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture), token);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
 
 namespace JobPlanner
@@ -9,11 +11,18 @@ namespace JobPlanner
         {
         }
 
-        public override void Execute(DateTime signalTime)
+        public override Task Execute(DateTime signalTime, CancellationToken token)
         {
-            base.Execute(signalTime);
+            if (token.IsCancellationRequested)
+            {
+                Console.WriteLine("Операция прервана токеном");
+                return Task.CompletedTask;
+            }
+
+            base.Execute(signalTime, token);
 
             Console.WriteLine($"Executed: {signalTime}");
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using JobPlanner;
@@ -9,12 +10,13 @@ namespace JobPlannerTests
 {
     public class JobSchedulerTests
     {
+
         [Fact]
         public async Task Start_ShouldRun_ExecutesJob()
         {
             // arrange
             var mockedJob = new Mock<IJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(true);
+            mockedJob.Setup(x =>x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
 
             var scheduler = new JobScheduler(200);
             scheduler.RegisterJob(mockedJob.Object);
@@ -24,7 +26,7 @@ namespace JobPlannerTests
             await Task.Delay(250);
 
             // assert
-            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>()), Times.Once);
+            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -32,7 +34,7 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(false);
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(false));
 
             var scheduler = new JobScheduler(200);
             scheduler.RegisterJob(mockedJob.Object);
@@ -42,7 +44,7 @@ namespace JobPlannerTests
             await Task.Delay(250);
 
             // assert
-            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>()), Times.Never);
+            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -50,8 +52,8 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(true);
-            mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>())).Throws<Exception>();
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
+            mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
             var scheduler = new JobScheduler(200);
             scheduler.RegisterJob(mockedJob.Object);
@@ -69,7 +71,7 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IDelayedJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(true);
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
 
             var scheduler = new JobScheduler(200);
             scheduler.RegisterJob(mockedJob.Object);
@@ -79,7 +81,7 @@ namespace JobPlannerTests
             await Task.Delay(250);
 
             // assert
-            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>()), Times.Once);
+            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -87,7 +89,7 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IDelayedJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(false);
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(false));
 
             var scheduler = new JobScheduler(200);
             scheduler.RegisterJob(mockedJob.Object);
@@ -97,7 +99,7 @@ namespace JobPlannerTests
             await Task.Delay(250);
 
             // assert
-            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>()), Times.Never);
+            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -105,8 +107,8 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IDelayedJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(true);
-            mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>())).Throws<Exception>();
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
+            mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
             var scheduler = new JobScheduler(200);
             scheduler.RegisterJob(mockedJob.Object);
@@ -137,7 +139,7 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(true);
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
 
             var scheduler = new JobScheduler(100);
             scheduler.RegisterJob(mockedJob.Object);
@@ -148,7 +150,7 @@ namespace JobPlannerTests
             scheduler.Stop();
 
             // assert
-            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>()), Times.Exactly(2));
+            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
 
         [Fact]
@@ -156,7 +158,7 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(false);
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(false));
 
             var scheduler = new JobScheduler(100);
             scheduler.RegisterJob(mockedJob.Object);
@@ -167,7 +169,7 @@ namespace JobPlannerTests
             scheduler.Stop();
 
             // assert
-            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>()), Times.Never);
+            mockedJob.Verify(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -175,8 +177,8 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
-            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(true);
-            mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>())).Throws<Exception>();
+            mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
+            mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
             var scheduler = new JobScheduler(100);
             scheduler.RegisterJob(mockedJob.Object);

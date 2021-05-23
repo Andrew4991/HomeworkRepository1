@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using JobPlanner;
 
 namespace AnalyticsProgram.Jobs
@@ -7,11 +9,11 @@ namespace AnalyticsProgram.Jobs
     {
         private bool _isFailed;
 
-        public abstract void Execute(DateTime signalTime);
+        public abstract Task Execute(DateTime signalTime, CancellationToken token);
 
-        public virtual bool ShouldRun(DateTime signalTime)
+        public virtual Task<bool> ShouldRun(DateTime signalTime)
         {
-            return !_isFailed;
+            return Task.FromResult(!_isFailed);
         }
 
         public virtual void MarkAsFailed()

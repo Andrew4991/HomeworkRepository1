@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
 using ShopApp;
 
@@ -13,12 +15,22 @@ namespace JobPlanner
             _repository = repository;
         }
 
-        public override void Execute(DateTime signalTime)
+        public override Task Execute(DateTime signalTime, CancellationToken token)
         {
             foreach (var item in _repository.GetProductsPurchasedForAllCustomers())
             {
+                if (token.IsCancellationRequested)
+                {
+                    Console.WriteLine("Операция прервана токеном");
+                    break;
+                }
+
                 Console.WriteLine($"Executed:{signalTime}.\t{item}");
+
+                Thread.Sleep(500);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

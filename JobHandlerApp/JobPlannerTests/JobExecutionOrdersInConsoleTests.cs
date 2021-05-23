@@ -3,6 +3,7 @@ using JobPlanner;
 using Moq;
 using Xunit;
 using ShopApp;
+using System.Threading;
 
 namespace JobPlannerTests
 {
@@ -20,7 +21,7 @@ namespace JobPlannerTests
             var job = new JobExecutionOrdersInConsole(mockedRepository.Object);
 
             // act
-            job.Execute(DateTime.Now);
+            job.Execute(DateTime.Now, It.IsAny<CancellationToken>());
 
             // assert
             mockedRepository.Verify(x => x.GetProductsPurchasedForAllCustomers(), Times.Once);

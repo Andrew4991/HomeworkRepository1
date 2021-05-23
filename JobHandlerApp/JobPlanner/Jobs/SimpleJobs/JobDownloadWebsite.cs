@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
 
 namespace JobPlanner
@@ -14,9 +16,10 @@ namespace JobPlanner
             _fileName = _path.Replace("https://", "") + ".txt";
         }
 
-        public override void Execute(DateTime signalTime)
+        public override async Task Execute(DateTime signalTime, CancellationToken token)
         {
-            WebsiteUtils.Download(_path, _fileName);
+            var httpText = await WebsiteUtils.DownloadHttp(_path, token);
+            await FileUtils.WriteToFile(_fileName, httpText, token);
         }
     }
 }

@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace JobPlanner
 {
     public class JobScheduler
     {
-        private readonly Timer _timer;
+        private readonly System.Timers.Timer _timer;
         private readonly List<IJob> _jobs = new();
         private readonly List<IDelayedJob> _delayedJobs = new();
+        private CancellationTokenSource _cancelTokenSource;
+        private CancellationToken _token;
 
         public JobScheduler(int intervalMs)
         {
-            _timer = new Timer(intervalMs);
+            _timer = new System.Timers.Timer(intervalMs);
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
             _timer.Enabled = false;
@@ -36,32 +40,46 @@ namespace JobPlanner
                 throw new ArgumentException("Not added jobs!");
             }
 
+            _cancelTokenSource = new();
+            _token = _cancelTokenSource.Token;
             _timer.Start();
         }
 
-        public void Stop() => _timer.Stop();
+        public void Stop()
+        {
+            _timer.Stop();
+            _cancelTokenSource.Cancel();
+        }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs @event)
         {
-            ExecuteSimpleJobs(@event);
-            ExecuteDelayedJobs(@event);
+            OnTimedEventAsync(@event).GetAwaiter().GetResult();
         }
 
-        private void ExecuteSimpleJobs(ElapsedEventArgs @event)
+        private async Task OnTimedEventAsync(ElapsedEventArgs @event)
         {
-            ExecuteJobs(_jobs, @event.SignalTime);
+            await ExecuteSimpleJobs(@event);
+            await ExecuteDelayedJobs(@event);
         }
 
-        private void ExecuteDelayedJobs(ElapsedEventArgs @event)
+        private async Task ExecuteSimpleJobs(ElapsedEventArgs @event)
         {
-            ExecuteJobs(_delayedJobs.Select(x => x as IJob), @event.SignalTime);
+            await ExecuteJobs(_jobs, @event.SignalTime);
         }
 
-        private void ExecuteJobs(IEnumerable<IJob> jobs, DateTime startAt)
+        private async Task ExecuteDelayedJobs(ElapsedEventArgs @event)
         {
-            foreach (var job in jobs.Where(x => x.ShouldRun(startAt)))
+            await ExecuteJobs(_delayedJobs.Select(x => x as IJob), @event.SignalTime);
+        }
+
+        private async Task ExecuteJobs(IEnumerable<IJob> jobs, DateTime startAt)
+        {
+            foreach (var job in jobs)
             {
-                ExecuteJob(job, startAt);
+                if (await job.ShouldRun(startAt))
+                {
+                    ExecuteJob(job, startAt);
+                } 
             }
         }
 
@@ -69,7 +87,7 @@ namespace JobPlanner
         {
             try
             {
-                job.Execute(signalTime);
+                job.Execute(signalTime, _token);
             }
             catch (Exception e)
             {

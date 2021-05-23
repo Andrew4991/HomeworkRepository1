@@ -1,5 +1,6 @@
 ﻿using System;
 using JobPlanner;
+using JobPlanner.Jobs.SimpleJobs;
 using ShopApp;
 
 namespace JobHandlerApp
@@ -33,21 +34,24 @@ namespace JobHandlerApp
                             AddPrintOrders();
                             break;
                         case 5:
-                            AddLogToConsoleOnce();
+                            AddPrintGitHub();
                             break;
                         case 6:
-                            AddLogToFileOnce();
+                            AddLogToConsoleOnce();
                             break;
                         case 7:
-                            AddDownloadWebsiteOnce();
+                            AddLogToFileOnce();
                             break;
                         case 8:
-                            AddPrintOrdersOnce();
+                            AddDownloadWebsiteOnce();
                             break;
                         case 9:
-                            Start();
+                            AddPrintOrdersOnce();
                             break;
                         case 10:
+                            Start();
+                            break;
+                        case 11:
                             alive = false;
                             continue;
                         default:
@@ -93,12 +97,13 @@ namespace JobHandlerApp
             Console.WriteLine("2. Add logging to the file");
             Console.WriteLine("3. Add download website to file");
             Console.WriteLine("4. Add print orders to the console");
-            Console.WriteLine("5. Add logging to console by date");
-            Console.WriteLine("6. Add logging to file by date");
-            Console.WriteLine("7. Add download website to file by date");
-            Console.WriteLine("8. Add print orders to console by date");
-            Console.WriteLine("9. Start scheduler");
-            Console.WriteLine("10. Exit program");
+            Console.WriteLine("5. Add print github to the console");
+            Console.WriteLine("6. Add logging to console by date");
+            Console.WriteLine("7. Add logging to file by date");
+            Console.WriteLine("8. Add download website to file by date");
+            Console.WriteLine("9. Add print orders to console by date");
+            Console.WriteLine("10. Start scheduler");
+            Console.WriteLine("11. Exit program");
 
             Console.WriteLine("Enter the item number:");
             Console.ForegroundColor = color;
@@ -126,6 +131,11 @@ namespace JobHandlerApp
         private static void AddPrintOrders()
         {
             _scheduler.RegisterJob(new JobExecutionOrdersInConsole(new Repository()));
+        }
+
+        private static void AddPrintGitHub()
+        {
+            _scheduler.RegisterJob(new JobGithubRepositoryParser());
         }
 
         private static void AddLogToConsoleOnce()
@@ -160,6 +170,8 @@ namespace JobHandlerApp
 
             AwaitPress(ConsoleKey.Enter);
 
+            Console.Clear();
+
             _scheduler.Start();
 
             AwaitStop();
@@ -170,6 +182,8 @@ namespace JobHandlerApp
             AwaitPress(ConsoleKey.Escape);
 
             _scheduler.Stop();
+
+            Console.ReadKey();
         }
 
         private static void AwaitPress(ConsoleKey key)
@@ -177,8 +191,6 @@ namespace JobHandlerApp
             while (Console.ReadKey().Key != key)
             {
             }
-
-            Console.Clear();
         }
 
         private static int ReadInterval()

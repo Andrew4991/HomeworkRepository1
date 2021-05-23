@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
 
 namespace JobPlanner
@@ -12,11 +14,11 @@ namespace JobPlanner
         {
         }
 
-        public override void Execute(DateTime signalTime)
+        public override async Task Execute(DateTime signalTime, CancellationToken token)
         {
-            base.Execute(signalTime);
+            await base.Execute(signalTime, token);
 
-            FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture));  
+            await FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture), token);
         }
     }
 }

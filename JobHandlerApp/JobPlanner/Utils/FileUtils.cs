@@ -1,24 +1,22 @@
 ﻿using System;
 using System.IO;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace JobPlanner
 {
     public static class FileUtils
     {
-        public static void WriteToFile(string path, string text)
+        public static async Task WriteToFile(string path, string text, CancellationToken token)
         {
-            if (!File.Exists(path))
+            if (token.IsCancellationRequested)
             {
-                using var stream = File.Create(path);
-                byte[] info = new UTF8Encoding(true).GetBytes($"{text}\n");
-                stream.Write(info, 0, info.Length);
+                Console.WriteLine("Операция прервана токеном");
+                return;
             }
-            else
-            {
-                File.AppendAllText(path, text);
-                File.AppendAllText(path, Environment.NewLine);
-            }
+
+            using var writer = new StreamWriter(path, true);
+            await writer.WriteLineAsync(text.AsMemory(), token);
         }
     }
 }

@@ -1,0 +1,28 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AnalyticsProgram.Jobs;
+using JobPlanner.Wrappers;
+
+namespace JobPlanner
+{
+    public class DelayedJobDownloadWebsite : BaseDelayedJob
+    {
+        private readonly string _path;
+        private readonly string _fileName;
+
+        public DelayedJobDownloadWebsite(string path, DateTime timeStart) : base(timeStart)
+        {
+            _path = WebsiteUtils.GetDownloadUrl(path);
+            _fileName = FileUtils.GetPathSaveUrl(_path);
+        }
+
+        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        {
+            await base.Execute(signalTime, console, token);
+
+            var httpText = await WebsiteUtils.DownloadHttp(_path, token);
+            await FileUtils.WriteToFile(_fileName, httpText, token);
+        }
+    }
+}

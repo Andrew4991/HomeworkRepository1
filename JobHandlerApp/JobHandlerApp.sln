@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobHandlerApp", "JobHandlerApp\JobHandlerApp.csproj", "{CDE86319-ADA3-43C0-BC4D-1F20FC3AF01B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobHandlerApp", "JobHandlerApp\JobHandlerApp.csproj", "{CDE86319-ADA3-43C0-BC4D-1F20FC3AF01B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobPlanner", "JobPlanner\JobPlanner.csproj", "{45901302-825A-4036-B792-0B215F977951}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JobPlanner", "JobPlanner\JobPlanner.csproj", "{45901302-825A-4036-B792-0B215F977951}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JobPlannerTests", "JobPlannerTests\JobPlannerTests.csproj", "{79885A61-A57B-4117-A6D1-5AF428CF97B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{45901302-825A-4036-B792-0B215F977951}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45901302-825A-4036-B792-0B215F977951}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45901302-825A-4036-B792-0B215F977951}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79885A61-A57B-4117-A6D1-5AF428CF97B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79885A61-A57B-4117-A6D1-5AF428CF97B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79885A61-A57B-4117-A6D1-5AF428CF97B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79885A61-A57B-4117-A6D1-5AF428CF97B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

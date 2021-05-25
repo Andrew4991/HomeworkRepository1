@@ -20,5 +20,6 @@ namespace ShopApp
         bool DidPurchaseAllProducts(int customerId, params int[] productIds);
         CustomerOverView GetCustomerOverview(int customerId);
         List<(string productName, int numberOfPurchases)> GetProductsPurchased(int customerId);
+        public List<ProductsOverView> GetProductsPurchasedForAllCustomers();
     }
 }

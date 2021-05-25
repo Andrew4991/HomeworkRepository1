@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JobPlanner;
+using JobPlanner.Jobs.SimpleJobs;
+using ShopApp;
 
 namespace JobHandlerApp
 {
@@ -32,21 +35,24 @@ namespace JobHandlerApp
                             AddPrintOrders();
                             break;
                         case 5:
-                            AddLogToConsoleOnce();
+                            AddPrintGitHub();
                             break;
                         case 6:
-                            AddLogToFileOnce();
+                            AddLogToConsoleOnce();
                             break;
                         case 7:
-                            AddDownloadWebsiteOnce();
+                            AddLogToFileOnce();
                             break;
                         case 8:
-                            AddPrintOrdersOnce();
+                            AddDownloadWebsiteOnce();
                             break;
                         case 9:
-                            Start();
+                            AddPrintOrdersOnce();
                             break;
                         case 10:
+                            Start();
+                            break;
+                        case 11:
                             alive = false;
                             continue;
                         default:
@@ -92,12 +98,13 @@ namespace JobHandlerApp
             Console.WriteLine("2. Add logging to the file");
             Console.WriteLine("3. Add download website to file");
             Console.WriteLine("4. Add print orders to the console");
-            Console.WriteLine("5. Add logging to console by date");
-            Console.WriteLine("6. Add logging to file by date");
-            Console.WriteLine("7. Add download website to file by date");
-            Console.WriteLine("8. Add print orders to console by date");
-            Console.WriteLine("9. Start scheduler");
-            Console.WriteLine("10. Exit program");
+            Console.WriteLine("5. Add print github to the console");
+            Console.WriteLine("6. Add logging to console by date");
+            Console.WriteLine("7. Add logging to file by date");
+            Console.WriteLine("8. Add download website to file by date");
+            Console.WriteLine("9. Add print orders to console by date");
+            Console.WriteLine("10. Start scheduler");
+            Console.WriteLine("11. Exit program");
 
             Console.WriteLine("Enter the item number:");
             Console.ForegroundColor = color;
@@ -105,66 +112,55 @@ namespace JobHandlerApp
 
         private static void AddLogToConsole()
         {
-            AddLogToConsoleByDate(DateTime.MinValue);
+            _scheduler.RegisterJob(new JobExecutionTimeInConsole());
         }
 
         private static void AddLogToFile()
         {
-            AddLogToFileByDate(DateTime.MinValue);
+            _scheduler.RegisterJob(new JobExecutionTimeInFile());
         }
 
         private static void AddDownloadWebsite()
-        {
-            AddDownloadWebsiteByDate(DateTime.MinValue);
-        }
-
-        private static void AddPrintOrders()
-        {
-            AddPrintOrdersByDate(DateTime.MinValue);
-        }
-
-        private static void AddLogToConsoleOnce()
-        {
-            AddLogToConsoleByDate(ReadStartDate());
-        }
-
-        private static void AddLogToFileOnce()
-        {
-            AddLogToFileByDate(ReadStartDate());
-        }
-
-        private static void AddDownloadWebsiteOnce()
-        {
-            AddDownloadWebsiteByDate(ReadStartDate());
-        }
-
-        private static void AddPrintOrdersOnce()
-        {
-            AddPrintOrdersByDate(ReadStartDate());
-        }
-
-        private static void AddLogToConsoleByDate(DateTime startTime)
-        {
-            _scheduler.AddHandler(new JobExecutionTimeInConsole(startTime));
-        }
-
-        private static void AddLogToFileByDate(DateTime startTime)
-        {
-            _scheduler.AddHandler(new JobExecutionTimeInFile(startTime));
-        }
-
-        private static void AddDownloadWebsiteByDate(DateTime startTime)
         {
             Console.WriteLine("Input website address: ");
 
             var path = Console.ReadLine();
 
-            _scheduler.AddHandler(new JobDownloadWebsite(path, startTime));
+            _scheduler.RegisterJob(new JobDownloadWebsite(path));
         }
 
-        private static void AddPrintOrdersByDate(DateTime startTime)
+        private static void AddPrintOrders()
         {
-            _scheduler.AddHandler(new JobExecutionOrdersInConsole(startTime));
+            _scheduler.RegisterJob(new JobExecutionOrdersInConsole(new Repository()));
+        }
+
+        private static void AddPrintGitHub()
+        {
+            _scheduler.RegisterJob(new JobGithubRepositoryParser());
+        }
+
+        private static void AddLogToConsoleOnce()
+        {
+            _scheduler.RegisterJob(new DelayedJobExecutionTimeInConsole(ReadStartDate()));
+        }
+
+        private static void AddLogToFileOnce()
+        {
+            _scheduler.RegisterJob(new DelayedJobExecutionTimeInFile(ReadStartDate()));
+        }
+
+        private static void AddDownloadWebsiteOnce()
+        {
+            Console.WriteLine("Input website address: ");
+
+            var path = Console.ReadLine();
+
+            _scheduler.RegisterJob(new DelayedJobDownloadWebsite(path, ReadStartDate()));
+        }
+
+        private static void AddPrintOrdersOnce()
+        {
+            _scheduler.RegisterJob(new DelayedJobExecutionOrdersInConsole(ReadStartDate(), new Repository()));
         }
 
         private static void Start()
@@ -172,19 +168,35 @@ namespace JobHandlerApp
             Console.Clear();
             Console.WriteLine("Please press Enter for start program");
             Console.WriteLine("Please press ESC for stop program");
+            Console.WriteLine("Please press Q for stop running jobs");
 
             AwaitPress(ConsoleKey.Enter);
+
+            Console.Clear();
 
             _scheduler.Start();
 
             AwaitStop();
+
+            Console.ReadKey();
         }
 
         private static void AwaitStop()
         {
-            AwaitPress(ConsoleKey.Escape);
+            while (true)
+            {
+                var key = Console.ReadKey().Key;
 
-            _scheduler.Stop();
+                if (key == ConsoleKey.Escape)
+                {
+                    _scheduler.Stop();
+                    break;
+                }
+                else if(key == ConsoleKey.Q)
+                {
+                    _scheduler.CancelJobs();
+                }
+            }
         }
 
         private static void AwaitPress(ConsoleKey key)
@@ -192,8 +204,6 @@ namespace JobHandlerApp
             while (Console.ReadKey().Key != key)
             {
             }
-
-            Console.Clear();
         }
 
         private static int ReadInterval()

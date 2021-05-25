@@ -9,14 +9,13 @@ namespace JobPlanner
     {
         public static async Task WriteToFile(string path, string text, CancellationToken token)
         {
-            if (token.IsCancellationRequested)
-            {
-                Console.WriteLine("Операция прервана токеном");
-                return;
-            }
-
             using var writer = new StreamWriter(path, true);
             await writer.WriteLineAsync(text.AsMemory(), token);
+        }
+
+        public static string GetPathSaveUrl(string websitePath)
+        {
+            return websitePath.Replace("https://", "") + ".txt";
         }
     }
 }

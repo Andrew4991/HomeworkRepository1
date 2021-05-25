@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
+using JobPlanner.Wrappers;
 using ShopApp;
 
 namespace JobPlanner
@@ -15,19 +16,19 @@ namespace JobPlanner
             _repository = repository;
         }
 
-        public override Task Execute(DateTime signalTime, CancellationToken token)
+        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
-            base.Execute(signalTime, token);
+            base.Execute(signalTime, console, token);
 
             foreach (var item in _repository.GetProductsPurchasedForAllCustomers())
             {
                 if (token.IsCancellationRequested)
                 {
-                    Console.WriteLine("Операция прервана токеном");
+                    console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
                     break;
                 }
 
-                Console.WriteLine($"Executed:{signalTime}.\t{item}");
+                console.WriteLine($"Executed:{signalTime}.\t{item}");
             }
 
             return Task.CompletedTask;

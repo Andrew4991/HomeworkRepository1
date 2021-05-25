@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using JobPlanner.Wrappers;
 
 namespace JobPlanner
 {
@@ -13,7 +14,7 @@ namespace JobPlanner
         private readonly List<IJob> _jobs = new();
         private readonly List<IDelayedJob> _delayedJobs = new();
         private CancellationTokenSource _cancelTokenSource;
-        private CancellationToken _token;
+        private readonly IConsoleWrapper _console = new ConsoleWrapper();
 
         public JobScheduler(int intervalMs)
         {
@@ -40,19 +41,30 @@ namespace JobPlanner
                 throw new ArgumentException("Not added jobs!");
             }
 
-            _cancelTokenSource = new();
-            _token = _cancelTokenSource.Token;
             _timer.Start();
+        }
+
+        public void CancelJobs()
+        {
+            if (_cancelTokenSource != null)
+            {
+                _cancelTokenSource.Cancel();
+            }
         }
 
         public void Stop()
         {
-            _timer.Stop();
-            _cancelTokenSource.Cancel();
+            if (_timer.Enabled)
+            {
+                CancelJobs();
+                _timer.Stop();
+            }
         }
 
         private void OnTimedEvent(object sender, ElapsedEventArgs @event)
         {
+            _cancelTokenSource = new();
+
             OnTimedEventAsync(@event).GetAwaiter().GetResult();
         }
 
@@ -78,20 +90,24 @@ namespace JobPlanner
             {
                 if (await job.ShouldRun(startAt))
                 {
-                    ExecuteJob(job, startAt);
+                   await ExecuteJob(job, startAt);
                 } 
             }
         }
 
-        private void ExecuteJob(IJob job, DateTime signalTime)
+        private async Task ExecuteJob(IJob job, DateTime signalTime)
         {
             try
             {
-                job.Execute(signalTime, _token);
+               await job.Execute(signalTime, _console, _cancelTokenSource.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                _console.WriteLine($"Operation was cancelled with exception. {e.Message}");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _console.WriteLine(e.Message);
                 job.MarkAsFailed();
             }
         }

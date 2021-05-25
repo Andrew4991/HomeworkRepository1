@@ -1,37 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
 using JobPlanner.GitJson;
-using Newtonsoft.Json;
+using System.Text.Json;
+using JobPlanner.Wrappers;
 
 namespace JobPlanner.Jobs.SimpleJobs
 {
     public class JobGithubRepositoryParser : BaseJob
     {
         private const string JsonUrl = "https://api.github.com/orgs/dotnet/repos";
-
-        private CancellationToken _token;
-
-        public override async Task Execute(DateTime signalTime, CancellationToken token)
+    
+        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
-            _token = token;
-
             var result = await WebsiteUtils.DownloadJson(JsonUrl, token);
 
-            var infoGit = JsonConvert.DeserializeObject<List<InfoGit>>(result);
+            var infoGit = JsonSerializer.Deserialize<InfoGit[]>(result);
 
-            foreach (var item in infoGit)
+            foreach (var item in infoGit.Where(x => DateTime.Parse(x.CreatedAt) >= new DateTime(2014, 1, 1)))
             {
-                Console.WriteLine($"Id: {item.Id}");
-            }
-        }
+                if (token.IsCancellationRequested)
+                {
+                    console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
+                    break;
+                }
 
-        public override async Task<bool> ShouldRun(DateTime signalTime)
-        {
-            var isConnected = await WebsiteUtils.DownloadJson("https://api.github.com", _token);
-            return await base.ShouldRun(signalTime) && isConnected.Length > 0;
+                console.WriteLine($"Id: {item.Id}   CreatedAt: {item.CreatedAt}");
+            }
         }
     }
 }

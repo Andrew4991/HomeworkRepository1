@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JobPlanner;
+using JobPlanner.Wrappers;
 
 namespace AnalyticsProgram.Jobs
 {
@@ -15,7 +16,7 @@ namespace AnalyticsProgram.Jobs
             _startAt = signalTime;
         }
 
-        public override Task Execute(DateTime signalTime, CancellationToken token)
+        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
             _hasRun = true;
             return Task.CompletedTask;

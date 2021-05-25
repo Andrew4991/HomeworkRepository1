@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
+using JobPlanner.Wrappers;
 
 namespace JobPlanner
 {
@@ -11,17 +12,17 @@ namespace JobPlanner
         {
         }
 
-        public override Task Execute(DateTime signalTime, CancellationToken token)
+        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
             if (token.IsCancellationRequested)
             {
-                Console.WriteLine("Операция прервана токеном");
+                console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
                 return Task.CompletedTask;
             }
 
-            base.Execute(signalTime, token);
-
-            Console.WriteLine($"Executed: {signalTime}");
+            base.Execute(signalTime, console, token);
+            
+            console.WriteLine($"Executed: {signalTime}");
             return Task.CompletedTask;
         }
     }

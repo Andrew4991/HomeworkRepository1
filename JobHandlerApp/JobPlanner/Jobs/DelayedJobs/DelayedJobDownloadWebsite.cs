@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
+using JobPlanner.Wrappers;
 
 namespace JobPlanner
 {
@@ -12,13 +13,13 @@ namespace JobPlanner
 
         public DelayedJobDownloadWebsite(string path, DateTime timeStart) : base(timeStart)
         {
-            _path = "https://" + path.Replace("https://", "");
-            _fileName = _path.Replace("https://", "") + ".txt";
+            _path = WebsiteUtils.GetDownloadUrl(path);
+            _fileName = FileUtils.GetPathSaveUrl(_path);
         }
 
-        public override async Task Execute(DateTime signalTime, CancellationToken token)
+        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
-            await base.Execute(signalTime, token);
+            await base.Execute(signalTime, console, token);
 
             var httpText = await WebsiteUtils.DownloadHttp(_path, token);
             await FileUtils.WriteToFile(_fileName, httpText, token);

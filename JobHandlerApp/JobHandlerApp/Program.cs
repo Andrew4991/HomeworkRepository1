@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JobPlanner;
 using JobPlanner.Jobs.SimpleJobs;
 using ShopApp;
@@ -167,6 +168,7 @@ namespace JobHandlerApp
             Console.Clear();
             Console.WriteLine("Please press Enter for start program");
             Console.WriteLine("Please press ESC for stop program");
+            Console.WriteLine("Please press Q for stop running jobs");
 
             AwaitPress(ConsoleKey.Enter);
 
@@ -175,15 +177,26 @@ namespace JobHandlerApp
             _scheduler.Start();
 
             AwaitStop();
+
+            Console.ReadKey();
         }
 
         private static void AwaitStop()
         {
-            AwaitPress(ConsoleKey.Escape);
+            while (true)
+            {
+                var key = Console.ReadKey().Key;
 
-            _scheduler.Stop();
-
-            Console.ReadKey();
+                if (key == ConsoleKey.Escape)
+                {
+                    _scheduler.Stop();
+                    break;
+                }
+                else if(key == ConsoleKey.Q)
+                {
+                    _scheduler.CancelJobs();
+                }
+            }
         }
 
         private static void AwaitPress(ConsoleKey key)

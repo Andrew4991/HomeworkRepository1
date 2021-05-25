@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AnalyticsProgram.Jobs;
+using JobPlanner.Wrappers;
 
 namespace JobPlanner
 {
@@ -12,11 +13,11 @@ namespace JobPlanner
 
         public JobDownloadWebsite(string path)
         {
-            _path = "https://" + path.Replace("https://", "");
-            _fileName = _path.Replace("https://", "") + ".txt";
+            _path = WebsiteUtils.GetDownloadUrl(path);
+            _fileName = FileUtils.GetPathSaveUrl(_path);
         }
 
-        public override async Task Execute(DateTime signalTime, CancellationToken token)
+        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
             var httpText = await WebsiteUtils.DownloadHttp(_path, token);
             await FileUtils.WriteToFile(_fileName, httpText, token);

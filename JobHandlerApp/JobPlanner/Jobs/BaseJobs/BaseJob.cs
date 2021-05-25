@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using JobPlanner;
+using JobPlanner.Wrappers;
 
 namespace AnalyticsProgram.Jobs
 {
@@ -9,7 +10,7 @@ namespace AnalyticsProgram.Jobs
     {
         private bool _isFailed;
 
-        public abstract Task Execute(DateTime signalTime, CancellationToken token);
+        public abstract Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token);
 
         public virtual Task<bool> ShouldRun(DateTime signalTime)
         {

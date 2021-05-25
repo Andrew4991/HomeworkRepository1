@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace JobPlanner.GitJson
 {
     public class PermissionsGit
     {
-        [JsonProperty("admin")]
+        [JsonPropertyName("admin")]
         public bool admin { get; set; }
 
-        [JsonProperty("push")]
+        [JsonPropertyName("push")]
         public bool Push { get; set; }
 
-        [JsonProperty("pull")]
+        [JsonPropertyName("pull")]
         public bool Pull { get; set; }
     }
 }

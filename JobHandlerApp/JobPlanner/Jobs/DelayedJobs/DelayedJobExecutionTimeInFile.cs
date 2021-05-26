@@ -11,13 +11,13 @@ namespace JobPlanner
     {
         private const string Path = "ExecutionTimeLogFromDelayedJob.txt";
 
-        public DelayedJobExecutionTimeInFile(DateTime timeStart) : base(timeStart)
+        public DelayedJobExecutionTimeInFile(IConsoleWrapper console, DateTime timeStart) : base(console, timeStart)
         {
         }
 
-        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        public override async Task Execute(DateTime signalTime, CancellationToken token)
         {
-            await base.Execute(signalTime, console, token);
+            await base.Execute(signalTime, token);
 
             await FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture), token);
         }

@@ -8,21 +8,21 @@ namespace JobPlanner
 {
     public class DelayedJobExecutionTimeInConsole : BaseDelayedJob
     {
-        public DelayedJobExecutionTimeInConsole(DateTime timeStart) : base(timeStart)
+        public DelayedJobExecutionTimeInConsole(IConsoleWrapper console, DateTime timeStart) : base(console, timeStart)
         {
         }
 
-        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        public override Task Execute(DateTime signalTime, CancellationToken token)
         {
             if (token.IsCancellationRequested)
             {
-                console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
+                _console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
                 return Task.CompletedTask;
             }
 
-            base.Execute(signalTime, console, token);
+            base.Execute(signalTime, token);
             
-            console.WriteLine($"Executed: {signalTime}");
+            _console.WriteLine($"Executed: {signalTime}");
             return Task.CompletedTask;
         }
     }

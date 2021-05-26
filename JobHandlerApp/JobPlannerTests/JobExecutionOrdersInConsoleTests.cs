@@ -22,10 +22,10 @@ namespace JobPlannerTests
             {
                 new ProductsOverView("Tom", "Phone", 100, 1)
             });
-            var job = new JobExecutionOrdersInConsole(mockedRepository.Object);
+            var job = new JobExecutionOrdersInConsole(mockedConsole.Object, mockedRepository.Object);
 
             // act
-            job.Execute(time, mockedConsole.Object, It.IsAny<CancellationToken>());
+            job.Execute(time, It.IsAny<CancellationToken>());
 
             // assert
             mockedRepository.Verify(x => x.GetProductsPurchasedForAllCustomers(), Times.Once);

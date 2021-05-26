@@ -18,10 +18,10 @@ namespace JobPlannerTests
             var mockedConsole = new Mock<IConsoleWrapper>();
             var time = DateTime.Now;
 
-            var job = new JobExecutionTimeInConsole();
+            var job = new JobExecutionTimeInConsole(mockedConsole.Object);
 
             // act
-            job.Execute(time, mockedConsole.Object, It.IsAny<CancellationToken>());
+            job.Execute(time, It.IsAny<CancellationToken>());
 
             // assert
             mockedConsole.Verify(x => x.WriteLine($"Executed: {time}"));

@@ -8,9 +8,13 @@ namespace JobPlanner
 {
     public class JobExecutionTimeInConsole : BaseJob
     {
-        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        public JobExecutionTimeInConsole(IConsoleWrapper console) : base(console)
         {
-            console.WriteLine($"Executed: {signalTime}");
+        }
+
+        public override Task Execute(DateTime signalTime, CancellationToken token)
+        {
+            _console.WriteLine($"Executed: {signalTime}");
             return Task.CompletedTask;
         }
     }

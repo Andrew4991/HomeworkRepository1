@@ -11,7 +11,11 @@ namespace JobPlanner
     {
         private const string Path = "ExecutionTimeLog.txt";
 
-        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        public JobExecutionTimeInFile(IConsoleWrapper console) : base(console)
+        {
+        }
+
+        public override async Task Execute(DateTime signalTime, CancellationToken token)
         {
             await FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture), token);
         }

@@ -11,22 +11,22 @@ namespace JobPlanner
     {
         private readonly IRepository _repository;
 
-        public JobExecutionOrdersInConsole(IRepository repository)
+        public JobExecutionOrdersInConsole(IConsoleWrapper console, IRepository repository) : base(console)
         {
             _repository = repository;
         }
 
-        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        public override Task Execute(DateTime signalTime, CancellationToken token)
         {
             foreach (var item in _repository.GetProductsPurchasedForAllCustomers())
             {
                 if (token.IsCancellationRequested)
                 {
-                    console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
+                    _console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
                     break;
                 }
 
-                console.WriteLine($"Executed:{signalTime}.\t{item}");
+                _console.WriteLine($"Executed:{signalTime}.\t{item}");
 
                 Thread.Sleep(500);
             }

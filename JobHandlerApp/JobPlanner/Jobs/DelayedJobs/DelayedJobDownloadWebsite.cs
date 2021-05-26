@@ -11,15 +11,15 @@ namespace JobPlanner
         private readonly string _path;
         private readonly string _fileName;
 
-        public DelayedJobDownloadWebsite(string path, DateTime timeStart) : base(timeStart)
+        public DelayedJobDownloadWebsite(IConsoleWrapper console, string path, DateTime timeStart) : base(console, timeStart)
         {
             _path = WebsiteUtils.GetDownloadUrl(path);
             _fileName = FileUtils.GetPathSaveUrl(_path);
         }
 
-        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        public override async Task Execute(DateTime signalTime, CancellationToken token)
         {
-            await base.Execute(signalTime, console, token);
+            await base.Execute(signalTime, token);
 
             var httpText = await WebsiteUtils.DownloadHttp(_path, token);
             await FileUtils.WriteToFile(_fileName, httpText, token);

@@ -14,10 +14,11 @@ namespace JobPlanner
         private readonly List<IJob> _jobs = new();
         private readonly List<IDelayedJob> _delayedJobs = new();
         private CancellationTokenSource _cancelTokenSource;
-        private readonly IConsoleWrapper _console = new ConsoleWrapper();
+        private IConsoleWrapper _console;
 
-        public JobScheduler(int intervalMs)
+        public JobScheduler(IConsoleWrapper console, int intervalMs)
         {
+            _console = console;
             _timer = new System.Timers.Timer(intervalMs);
             _timer.Elapsed += OnTimedEvent;
             _timer.AutoReset = true;
@@ -99,7 +100,7 @@ namespace JobPlanner
         {
             try
             {
-               await job.Execute(signalTime, _console, _cancelTokenSource.Token);
+               await job.Execute(signalTime, _cancelTokenSource.Token);
             }
             catch (OperationCanceledException e)
             {

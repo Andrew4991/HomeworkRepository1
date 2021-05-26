@@ -11,12 +11,12 @@ namespace AnalyticsProgram.Jobs
         private bool _hasRun;
         private readonly DateTime _startAt;
 
-        protected BaseDelayedJob(DateTime signalTime)
+        protected BaseDelayedJob(IConsoleWrapper console, DateTime signalTime) : base(console)
         {
             _startAt = signalTime;
         }
 
-        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+        public override Task Execute(DateTime signalTime, CancellationToken token)
         {
             _hasRun = true;
             return Task.CompletedTask;

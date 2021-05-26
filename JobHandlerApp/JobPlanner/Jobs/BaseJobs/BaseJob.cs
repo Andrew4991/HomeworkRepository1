@@ -10,7 +10,14 @@ namespace AnalyticsProgram.Jobs
     {
         private bool _isFailed;
 
-        public abstract Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token);
+        protected IConsoleWrapper _console;
+
+        public BaseJob(IConsoleWrapper console)
+        {
+            _console = console;
+        }
+
+        public abstract Task Execute(DateTime signalTime, CancellationToken token);
 
         public virtual Task<bool> ShouldRun(DateTime signalTime)
         {

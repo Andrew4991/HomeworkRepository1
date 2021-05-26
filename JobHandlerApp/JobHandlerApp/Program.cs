@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using JobPlanner;
 using JobPlanner.Jobs.SimpleJobs;
+using JobPlanner.Wrappers;
 using ShopApp;
 
 namespace JobHandlerApp
@@ -9,10 +10,11 @@ namespace JobHandlerApp
     public class Program
     {
         private static JobScheduler _scheduler;
+        private static readonly IConsoleWrapper _console = new ConsoleWrapper();
 
         public static void Main(string[] args)
         {
-           _scheduler = new(ReadInterval());
+           _scheduler = new(_console, ReadInterval());
 
             bool alive = true;
 
@@ -112,12 +114,12 @@ namespace JobHandlerApp
 
         private static void AddLogToConsole()
         {
-            _scheduler.RegisterJob(new JobExecutionTimeInConsole());
+            _scheduler.RegisterJob(new JobExecutionTimeInConsole(_console));
         }
 
         private static void AddLogToFile()
         {
-            _scheduler.RegisterJob(new JobExecutionTimeInFile());
+            _scheduler.RegisterJob(new JobExecutionTimeInFile(_console));
         }
 
         private static void AddDownloadWebsite()
@@ -126,27 +128,27 @@ namespace JobHandlerApp
 
             var path = Console.ReadLine();
 
-            _scheduler.RegisterJob(new JobDownloadWebsite(path));
+            _scheduler.RegisterJob(new JobDownloadWebsite(_console, path));
         }
 
         private static void AddPrintOrders()
         {
-            _scheduler.RegisterJob(new JobExecutionOrdersInConsole(new Repository()));
+            _scheduler.RegisterJob(new JobExecutionOrdersInConsole(_console, new Repository()));
         }
 
         private static void AddPrintGitHub()
         {
-            _scheduler.RegisterJob(new JobGithubRepositoryParser());
+            _scheduler.RegisterJob(new JobGithubRepositoryParser(_console));
         }
 
         private static void AddLogToConsoleOnce()
         {
-            _scheduler.RegisterJob(new DelayedJobExecutionTimeInConsole(ReadStartDate()));
+            _scheduler.RegisterJob(new DelayedJobExecutionTimeInConsole(_console, ReadStartDate()));
         }
 
         private static void AddLogToFileOnce()
         {
-            _scheduler.RegisterJob(new DelayedJobExecutionTimeInFile(ReadStartDate()));
+            _scheduler.RegisterJob(new DelayedJobExecutionTimeInFile(_console, ReadStartDate()));
         }
 
         private static void AddDownloadWebsiteOnce()
@@ -155,12 +157,12 @@ namespace JobHandlerApp
 
             var path = Console.ReadLine();
 
-            _scheduler.RegisterJob(new DelayedJobDownloadWebsite(path, ReadStartDate()));
+            _scheduler.RegisterJob(new DelayedJobDownloadWebsite(_console, path, ReadStartDate()));
         }
 
         private static void AddPrintOrdersOnce()
         {
-            _scheduler.RegisterJob(new DelayedJobExecutionOrdersInConsole(ReadStartDate(), new Repository()));
+            _scheduler.RegisterJob(new DelayedJobExecutionOrdersInConsole(_console, ReadStartDate(), new Repository()));
         }
 
         private static void Start()

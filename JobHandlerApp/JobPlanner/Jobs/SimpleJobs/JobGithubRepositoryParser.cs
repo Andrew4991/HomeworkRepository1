@@ -13,8 +13,12 @@ namespace JobPlanner.Jobs.SimpleJobs
     public class JobGithubRepositoryParser : BaseJob
     {
         private const string JsonUrl = "https://api.github.com/orgs/dotnet/repos";
-    
-        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
+
+        public JobGithubRepositoryParser(IConsoleWrapper console) : base(console)
+        {
+        }
+
+        public override async Task Execute(DateTime signalTime, CancellationToken token)
         {
             var result = await WebsiteUtils.DownloadJson(JsonUrl, token);
 
@@ -24,11 +28,11 @@ namespace JobPlanner.Jobs.SimpleJobs
             {
                 if (token.IsCancellationRequested)
                 {
-                    console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
+                    _console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
                     break;
                 }
 
-                console.WriteLine($"Id: {item.Id}   CreatedAt: {item.CreatedAt}");
+                _console.WriteLine($"Id: {item.Id}   CreatedAt: {item.CreatedAt}");
             }
         }
     }

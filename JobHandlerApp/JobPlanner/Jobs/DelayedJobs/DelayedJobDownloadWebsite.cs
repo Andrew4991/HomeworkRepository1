@@ -11,7 +11,7 @@ namespace JobPlanner
         private readonly string _path;
         private readonly string _fileName;
 
-        public DelayedJobDownloadWebsite(string path, DateTime timeStart) : base(timeStart)
+        public DelayedJobDownloadWebsite(IConsoleWrapper console, string path, DateTime timeStart) : base(console, timeStart)
         {
             _path = WebsiteUtils.GetDownloadUrl(path);
             _fileName = FileUtils.GetPathSaveUrl(_path);

@@ -11,7 +11,7 @@ namespace JobPlanner
     {
         private const string Path = "ExecutionTimeLogFromDelayedJob.txt";
 
-        public DelayedJobExecutionTimeInFile(DateTime timeStart) : base(timeStart)
+        public DelayedJobExecutionTimeInFile(IConsoleWrapper console, DateTime timeStart) : base(console, timeStart)
         {
         }
 

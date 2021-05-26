@@ -17,9 +17,10 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x =>x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
 
-            var scheduler = new JobScheduler(200);
+            var scheduler = new JobScheduler(mockedConsole.Object, 200);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -35,9 +36,10 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(false));
 
-            var scheduler = new JobScheduler(200);
+            var scheduler = new JobScheduler(mockedConsole.Object, 200);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -53,10 +55,11 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).Returns(Task<bool>.FromResult(true));
             mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<IConsoleWrapper>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var scheduler = new JobScheduler(200);
+            var scheduler = new JobScheduler(mockedConsole.Object, 200);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -72,9 +75,10 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IDelayedJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).ReturnsAsync(true);
 
-            var scheduler = new JobScheduler(200);
+            var scheduler = new JobScheduler(mockedConsole.Object, 200);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -90,9 +94,10 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IDelayedJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).ReturnsAsync(false);
 
-            var scheduler = new JobScheduler(200);
+            var scheduler = new JobScheduler(mockedConsole.Object, 200);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -108,10 +113,11 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IDelayedJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).ReturnsAsync(true);
             mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<IConsoleWrapper>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var scheduler = new JobScheduler(200);
+            var scheduler = new JobScheduler(mockedConsole.Object, 200);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -126,7 +132,8 @@ namespace JobPlannerTests
         public void Start_NotJobs_ThrowsException()
         {
             // arrange
-            var scheduler = new JobScheduler(200);
+            var mockedConsole = new Mock<IConsoleWrapper>();
+            var scheduler = new JobScheduler(mockedConsole.Object, 200);
 
             // act
             Action act = () => scheduler.Start();
@@ -140,9 +147,10 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).ReturnsAsync(true);
 
-            var scheduler = new JobScheduler(100);
+            var scheduler = new JobScheduler(mockedConsole.Object, 100);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -159,9 +167,10 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).ReturnsAsync(true);
 
-            var scheduler = new JobScheduler(100);
+            var scheduler = new JobScheduler(mockedConsole.Object, 100);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act
@@ -178,10 +187,11 @@ namespace JobPlannerTests
         {
             // arrange
             var mockedJob = new Mock<IJob>();
+            var mockedConsole = new Mock<IConsoleWrapper>();
             mockedJob.Setup(x => x.ShouldRun(It.IsAny<DateTime>())).ReturnsAsync(true);
             mockedJob.Setup(x => x.Execute(It.IsAny<DateTime>(), It.IsAny<IConsoleWrapper>(), It.IsAny<CancellationToken>())).Throws<Exception>();
 
-            var scheduler = new JobScheduler(100);
+            var scheduler = new JobScheduler(mockedConsole.Object, 100);
             scheduler.RegisterJob(mockedJob.Object);
 
             // act

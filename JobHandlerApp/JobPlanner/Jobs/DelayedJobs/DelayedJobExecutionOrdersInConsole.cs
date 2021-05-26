@@ -11,7 +11,7 @@ namespace JobPlanner
     {
         private readonly IRepository _repository;
 
-        public DelayedJobExecutionOrdersInConsole(DateTime timeStart, IRepository repository) :base(timeStart)
+        public DelayedJobExecutionOrdersInConsole(IConsoleWrapper console, DateTime timeStart, IRepository repository) :base(console, timeStart)
         {
             _repository = repository;
         }
@@ -24,11 +24,11 @@ namespace JobPlanner
             {
                 if (token.IsCancellationRequested)
                 {
-                    console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
+                    _console.WriteLine($"Operation interrupted by token for: {GetType().Name}");
                     break;
                 }
 
-                console.WriteLine($"Executed:{signalTime}.\t{item}");
+                _console.WriteLine($"Executed:{signalTime}.\t{item}");
             }
 
             return Task.CompletedTask;

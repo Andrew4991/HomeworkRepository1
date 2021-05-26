@@ -11,7 +11,7 @@ namespace JobPlanner
         private readonly string _path;
         private readonly string _fileName;
 
-        public JobDownloadWebsite(string path)
+        public JobDownloadWebsite(IConsoleWrapper console, string path) : base(console)
         {
             _path = WebsiteUtils.GetDownloadUrl(path);
             _fileName = FileUtils.GetPathSaveUrl(_path);

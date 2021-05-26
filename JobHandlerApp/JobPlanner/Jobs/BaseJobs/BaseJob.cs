@@ -9,8 +9,15 @@ namespace AnalyticsProgram.Jobs
     public abstract class BaseJob : IJob
     {
         private bool _isFailed;
+        
+        protected IConsoleWrapper _console;
 
-        public abstract Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token);
+        public BaseJob(IConsoleWrapper console)
+        {
+            _console = console;
+        }
+
+        public abstract Task Execute(DateTime signalTime, CancellationToken token);
 
         public virtual Task<bool> ShouldRun(DateTime signalTime)
         {

@@ -17,9 +17,9 @@ namespace JobPlanner
             _fileName = FileUtils.GetPathSaveUrl(_path);
         }
 
-        public override async Task Execute(DateTime signalTime, CancellationToken token)
+        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
-            await base.Execute(signalTime, token);
+            await base.Execute(signalTime, console, token);
 
             var httpText = await WebsiteUtils.DownloadHttp(_path, token);
             await FileUtils.WriteToFile(_fileName, httpText, token);

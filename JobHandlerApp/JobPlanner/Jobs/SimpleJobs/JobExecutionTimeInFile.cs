@@ -10,7 +10,7 @@ namespace JobPlanner
     public class JobExecutionTimeInFile : BaseJob
     {
         private const string Path = "ExecutionTimeLog.txt";
-
+        
         public JobExecutionTimeInFile(IConsoleWrapper console) : base(console)
         {
         }

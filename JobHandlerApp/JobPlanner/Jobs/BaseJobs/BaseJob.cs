@@ -9,7 +9,7 @@ namespace AnalyticsProgram.Jobs
     public abstract class BaseJob : IJob
     {
         private bool _isFailed;
-
+        
         protected IConsoleWrapper _console;
 
         public BaseJob(IConsoleWrapper console)

@@ -12,7 +12,7 @@ namespace JobPlanner
         {
         }
 
-        public override Task Execute(DateTime signalTime, CancellationToken token)
+        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
             if (token.IsCancellationRequested)
             {

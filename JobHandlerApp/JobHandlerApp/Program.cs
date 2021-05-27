@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using JobPlanner;
 using JobPlanner.Jobs.SimpleJobs;
 using JobPlanner.Wrappers;

@@ -15,9 +15,9 @@ namespace JobPlanner
         {
         }
 
-        public override async Task Execute(DateTime signalTime, CancellationToken token)
+        public override async Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
-            await base.Execute(signalTime, token);
+            await base.Execute(signalTime, console, token);
 
             await FileUtils.WriteToFile(Path, signalTime.ToString(CultureInfo.InvariantCulture), token);
         }

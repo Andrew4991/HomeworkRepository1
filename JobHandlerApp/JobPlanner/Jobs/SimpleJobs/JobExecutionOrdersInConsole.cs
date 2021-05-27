@@ -16,7 +16,7 @@ namespace JobPlanner
             _repository = repository;
         }
 
-        public override Task Execute(DateTime signalTime, CancellationToken token)
+        public override Task Execute(DateTime signalTime, IConsoleWrapper console, CancellationToken token)
         {
             foreach (var item in _repository.GetProductsPurchasedForAllCustomers())
             {

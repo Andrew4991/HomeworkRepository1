@@ -7,3 +7,4 @@ I have implemented 6 applications:
 4. JobHandlerApp
 5. ShopApp
 6. TasksApp
+7. BankPortalApp

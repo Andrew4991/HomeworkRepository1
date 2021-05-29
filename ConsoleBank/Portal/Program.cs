@@ -1,17 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Currencies;
 using Currencies.Entities;
+using Currencies.Services;
 
 namespace Portal
 {
     public class Program
     {
-        private static readonly CurrenciesApi _api = new();
+        private static readonly CurrencyInfoService _service = new();
         private static readonly CurrenciesConvertor _convertor = new();
+        private static readonly List<string> _listCurrency = new();
 
         public static async Task Main(string[] args)
         {
+           await _service.SetAbbreviation();
+
+            AddWhiteListForCurrenty();
+
             var alive = true;
 
             while (alive)
@@ -56,7 +63,6 @@ namespace Portal
                     ShowException(ex);
                 }
             }
-
         }
 
         private static int GetNumberItemOfMenu()
@@ -101,36 +107,37 @@ namespace Portal
 
         private static async Task PrintCurrencyById()
         {
-            PrintCurrency(await _api.GetCurrencyRate(ReadId()));
+            PrintCurrency(await _service.GetCurrencyRate(ReadId(), null));
         }
 
         private static async Task PrintCurrencyByAbbreviation()
         {
-
-            PrintCurrency(await _api.GetCurrencyRate(ReadAbbreviation()));
+            PrintCurrency(await _service.GetCurrencyRate(ReadAbbreviation(), null));
         }
 
         private static async Task PrintCurrencyByIdAndDate()
         {
-            PrintCurrency(await _api.GetCurrencyRate(ReadId(), ReadDate()));
+            PrintCurrency(await _service.GetCurrencyRate(ReadId(), ReadDate()));
         }
 
         private static async Task PrintCurrencyByAbbreviationAndDate()
         {
-
-            PrintCurrency(await _api.GetCurrencyRate(ReadAbbreviation(), ReadDate()));
+            PrintCurrency(await _service.GetCurrencyRate(ReadAbbreviation(), ReadDate()));
         }
 
         private static async Task ConvertToBYN()
         {
-            PrintonvertMoney(await _convertor.ConvertToByn(ReadAbbreviation(), ReadAmount()), "BYN");
+            var currencyId = await _service.GetCurrencyId(ReadAbbreviation());
+
+            PrintConvertMoney(await _convertor.ConvertToByn(currencyId, ReadAmount()), "BYN");
         }
 
         private static async Task ConvertFromBYN()
         {
             var abbreviation = ReadAbbreviation();
+            var currencyId = await _service.GetCurrencyId(abbreviation);
 
-            PrintonvertMoney(await _convertor.ConvertFromByn(abbreviation, ReadAmount()), abbreviation);
+            PrintConvertMoney(await _convertor.ConvertFromByn(currencyId, ReadAmount()), abbreviation);
         }
 
         private static void PrintCurrency(CurrencyRate rate)
@@ -138,9 +145,14 @@ namespace Portal
             Console.WriteLine(rate);
         }
 
-        private static void PrintonvertMoney(decimal amount, string abbreviation)
+        private static void PrintConvertMoney(double amount, string abbreviation)
         {
-            Console.WriteLine($"{amount:0.0000} {abbreviation.ToUpper()}");
+            Console.WriteLine($"{amount:0.0000} {abbreviation}");
+        }
+
+        private static void AddWhiteListForCurrenty()
+        {
+            _listCurrency.AddRange(new List<string> { "USD", "EUR", "RUB" });
         }
 
         private static int ReadId()
@@ -179,26 +191,24 @@ namespace Portal
 
             while (true)
             {
-                abbreviation = Console.ReadLine().Trim();
+                abbreviation = Console.ReadLine().Trim().ToUpper();
 
-                if (abbreviation.Length == 3)
+                if (abbreviation.Length == 3 && _listCurrency.Contains(abbreviation))
                 {
                     return abbreviation;
                 }
 
                 Console.Write("You entered the wrong abbreviation. Please try again: ");
             }
-
-            return abbreviation;
         }
 
-        private static decimal ReadAmount()
+        private static double ReadAmount()
         {
             Console.WriteLine("Please enter the amount:");
 
-            decimal amount;
+            double amount;
 
-            while (!decimal.TryParse(Console.ReadLine(), out amount))
+            while (!double.TryParse(Console.ReadLine(), out amount))
             {
                 Console.Write("You entered the wrong amount. Please try again: ");
             }

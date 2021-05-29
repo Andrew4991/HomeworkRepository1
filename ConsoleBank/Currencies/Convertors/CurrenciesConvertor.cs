@@ -6,19 +6,20 @@ namespace Currencies
     {
         private readonly CurrenciesApi _api = new();
 
-        public async Task<decimal> ConvertFromByn(string currencyAbbreviation, decimal amount)
+        public async Task<double> ConvertFromByn(int currencyId, double amount)
         {
-            return amount / await GetRate(currencyAbbreviation);
+            return amount * await GetRate(currencyId);
         }
 
-        public async Task<decimal> ConvertToByn(string currencyAbbreviation, decimal amount)
+        public async Task<double> ConvertToByn(int currencyId, double amount)
         {
-            return amount * await GetRate(currencyAbbreviation);
+            return amount / await GetRate(currencyId);
         }
 
-        private async Task<decimal> GetRate(string currencyAbbreviation)
+        private async Task<double> GetRate(int currencyId)
         {
-            return (decimal)(await _api.GetCurrencyRate(currencyAbbreviation)).Rate;
+            var currencyRate = await _api.GetCurrencyRate(currencyId, null);
+            return currencyRate.Scale / currencyRate.Rate;
         }
     }
 }

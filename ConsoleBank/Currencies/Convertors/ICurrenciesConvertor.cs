@@ -4,8 +4,8 @@ namespace Currencies
 {
     public interface ICurrenciesConvertor
     {
-       Task<decimal> ConvertToByn(string currencyAbbreviation, decimal amount);
+        Task<double> ConvertToByn(int currencyId, double amount);
 
-       Task<decimal> ConvertFromByn(string currencyAbbreviation, decimal amount);
+        Task<double> ConvertFromByn(int currencyId, double amount);
     }
 }

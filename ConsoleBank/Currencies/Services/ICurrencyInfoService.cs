@@ -2,12 +2,14 @@
 using System.Threading.Tasks;
 using Currencies.Entities;
 
-namespace Currencies
+namespace Currencies.Services
 {
-    public interface ICurrenciesApi
+    public interface ICurrencyInfoService
     {
-        Task<Currency[]> GetCurrencies();
         Task<CurrencyRate> GetCurrencyRate(int currencyId, DateTime? ondate);
+
         Task<CurrencyRate> GetCurrencyRate(string currencyAbbreviation, DateTime? ondate);
+
+        Task<int> GetCurrencyId(string currencyAbbreviation);
     }
 }

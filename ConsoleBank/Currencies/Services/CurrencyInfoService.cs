@@ -9,29 +9,44 @@ namespace Currencies.Services
     public class CurrencyInfoService : ICurrencyInfoService
     {
         private readonly ICurrenciesApi _api = new CurrenciesApi();
-        private readonly List<Currency> _currenties = new();
+        private static readonly Dictionary<string, List<CurrencyRate>> _currentyRates= new ();
 
-        public async Task SetAbbreviation()
+        public async Task<CurrencyRate> GetCurrencyRate(int currencyId, DateTime? ondate)
         {
-            foreach (var cur in await _api.GetCurrencies())
+            var key = ondate.HasValue ? ondate.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd");
+
+            await SetCurrencyRates(key, ondate);
+
+            var result = _currentyRates[key].SingleOrDefault(x => x.Id == currencyId);
+
+            if (result == null)
             {
-                _currenties.Add(cur);
+                throw new ArgumentException("Invalid currenty rate Id!");
             }
+
+            return result;
         }
 
-        public Task<int> GetCurrencyId(string currencyAbbreviation)
+        public async Task<CurrencyRate> GetCurrencyRate(string currencyAbbreviation, DateTime? ondate)
         {
-            return Task.FromResult(_currenties.Where(x => x.Abbreviation == currencyAbbreviation).Last().Id);
+            return await GetCurrencyRate(await GetCurrencyId(currencyAbbreviation, ondate), ondate);
         }
 
-        public Task<CurrencyRate> GetCurrencyRate(int currencyId, DateTime? ondate)
+        public async Task<int> GetCurrencyId(string currencyAbbreviation, DateTime? ondate)
         {
-            return _api.GetCurrencyRate(currencyId, ondate);
+            var key = ondate.HasValue ? ondate.Value.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd");
+
+            await SetCurrencyRates(key, ondate);
+
+            return _currentyRates[key].Single(x => x.Abbreviation == currencyAbbreviation).Id;
         }
 
-        public Task<CurrencyRate> GetCurrencyRate(string currencyAbbreviation, DateTime? ondate)
+        private async Task SetCurrencyRates(string key, DateTime? ondate)
         {
-            return _api.GetCurrencyRate(currencyAbbreviation, ondate);
+            if (!_currentyRates.ContainsKey(key))
+            {
+                _currentyRates[key] = await _api.GetCurrencyRates(ondate);
+            }
         }
     }
 }

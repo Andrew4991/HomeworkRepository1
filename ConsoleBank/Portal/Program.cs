@@ -9,15 +9,14 @@ namespace Portal
 {
     public class Program
     {
-        private static readonly CurrencyInfoService _service = new();
-        private static readonly CurrenciesConvertor _convertor = new();
-        private static readonly List<string> _listCurrency = new();
+        private static readonly ICurrencyInfoService _service = new CurrencyInfoService();
+        private static readonly ICurrenciesConvertor _convertor = new CurrenciesConvertor();
+
+        private static readonly List<string> _availableCurrencies = new();
 
         public static async Task Main(string[] args)
         {
-           await _service.SetAbbreviation();
-
-            AddWhiteListForCurrenty();
+            AddAvailableCurrencies();
 
             var alive = true;
 
@@ -107,12 +106,12 @@ namespace Portal
 
         private static async Task PrintCurrencyById()
         {
-            PrintCurrency(await _service.GetCurrencyRate(ReadId(), null));
+            PrintCurrency(await _service.GetCurrencyRate(ReadId()));
         }
 
         private static async Task PrintCurrencyByAbbreviation()
         {
-            PrintCurrency(await _service.GetCurrencyRate(ReadAbbreviation(), null));
+            PrintCurrency(await _service.GetCurrencyRate(ReadAbbreviation()));
         }
 
         private static async Task PrintCurrencyByIdAndDate()
@@ -150,9 +149,9 @@ namespace Portal
             Console.WriteLine($"{amount:0.0000} {abbreviation}");
         }
 
-        private static void AddWhiteListForCurrenty()
+        private static void AddAvailableCurrencies()
         {
-            _listCurrency.AddRange(new List<string> { "USD", "EUR", "RUB" });
+            _availableCurrencies.AddRange(new List<string> { "USD", "EUR", "RUB" });
         }
 
         private static int ReadId()
@@ -193,7 +192,7 @@ namespace Portal
             {
                 abbreviation = Console.ReadLine().Trim().ToUpper();
 
-                if (abbreviation.Length == 3 && _listCurrency.Contains(abbreviation))
+                if (abbreviation.Length == 3 && _availableCurrencies.Contains(abbreviation))
                 {
                     return abbreviation;
                 }

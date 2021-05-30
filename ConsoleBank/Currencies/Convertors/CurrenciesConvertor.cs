@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
+using Currencies.Services;
 
 namespace Currencies
 {
     public class CurrenciesConvertor : ICurrenciesConvertor
     {
-        private readonly CurrenciesApi _api = new();
+        private readonly ICurrencyInfoService _apiService = new CurrencyInfoService();
 
         public async Task<double> ConvertFromByn(int currencyId, double amount)
         {
@@ -18,7 +19,7 @@ namespace Currencies
 
         private async Task<double> GetRate(int currencyId)
         {
-            var currencyRate = await _api.GetCurrencyRate(currencyId, null);
+            var currencyRate = await _apiService.GetCurrencyRate(currencyId);
             return currencyRate.Scale / currencyRate.Rate;
         }
     }

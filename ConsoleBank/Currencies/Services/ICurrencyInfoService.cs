@@ -6,10 +6,10 @@ namespace Currencies.Services
 {
     public interface ICurrencyInfoService
     {
-        Task<CurrencyRate> GetCurrencyRate(int currencyId, DateTime? ondate);
+        Task<CurrencyRate> GetCurrencyRate(int currencyId, DateTime? ondate = null);
 
-        Task<CurrencyRate> GetCurrencyRate(string currencyAbbreviation, DateTime? ondate);
+        Task<CurrencyRate> GetCurrencyRate(string currencyAbbreviation, DateTime? ondate = null);
 
-        Task<int> GetCurrencyId(string currencyAbbreviation);
+        Task<int> GetCurrencyId(string currencyAbbreviation, DateTime? ondate = null);
     }
 }
